@@ -117,6 +117,62 @@ classDiagram
     CoffeeShopSystem *-- RevenueSummary
 ```
 
+## Project Structure
+
+```
+Coffee_Shop_Management_System/
+├── pom.xml                          # Maven build config — dependencies, plugins
+├── DESIGN_SYSTEM.md                 # Full UI design spec (colors, typography, components)
+│
+└── src/main/
+    ├── java/com/cafelumiere/
+    │   │
+    │   ├── model/                   # Tier 1 — Data classes
+    │   │   ├── MenuItem.java        # Abstract base class for all drinks
+    │   │   ├── HotDrink.java        # Extends MenuItem (temperature field)
+    │   │   ├── ColdDrink.java       # Extends MenuItem (iceLevel field)
+    │   │   ├── Customer.java        # Customer data (id, name, phone, address)
+    │   │   ├── Order.java           # Order data (customer, items, dateTime, total)
+    │   │   └── Menu.java            # Fixed list of the 10 drinks
+    │   │
+    │   ├── inventory/               # Tier 2 — Logic
+    │   │   └── Inventory.java       # Ingredient stock tracking (map + threshold)
+    │   │
+    │   ├── reports/                 # Tier 2 — Logic
+    │   │   └── RevenueSummary.java  # Daily revenue KPIs (total, count, best seller)
+    │   │
+    │   ├── system/                  # Tier 3 — Controller
+    │   │   └── CoffeeShopSystem.java# Central controller — all screens talk to this
+    │   │
+    │   └── ui/                      # Frontend (Java Swing)
+    │       ├── Main.java            # App entry point, JFrame, CardLayout navigation
+    │       ├── LoginScreen.java     # Login screen
+    │       ├── Dashboard.java       # Dashboard (stat cards + chart + recent orders)
+    │       ├── OrderEntryScreen.java# Order entry (customer selector + drink grid)
+    │       ├── InventoryView.java   # Inventory table
+    │       ├── RevenueSummaryView.java # Revenue stat cards + today's orders
+    │       │
+    │       ├── components/          # Reusable UI building blocks
+    │       │   ├── Theme.java       # All design tokens (colors, fonts, spacing)
+    │       │   ├── RoundedPanel.java# White card with rounded corners
+    │       │   ├── StatCard.java    # KPI card with accent strip
+    │       │   ├── DrinkCard.java   # Product card (image, price, qty, add to cart)
+    │       │   ├── Badge.java       # Pill label (Warning / Success)
+    │       │   ├── Table.java       # Alternating-row data table
+    │       │   ├── Buttons.java     # KButton factory (Primary/Secondary/Danger)
+    │       │   ├── SidebarNav.java  # Dark gradient sidebar with nav items
+    │       │   ├── LabeledField.java# Text input with label and focus border
+    │       │   └── ContentPage.java # Abstract base for all 4 main screens
+    │       │
+    │       └── theme/
+    │           └── Theme.java       # Design token constants (moved here from components)
+    │
+    └── resources/
+        ├── fonts/                   # Nunito TTF files (400, 600, 700 weights)
+        ├── images/                  # Drink photos (hot_*.png / iced_*.png)
+        └── data/                    # Save files written by saveData() / loadData()
+```
+
 ## Design System
 
 Full spec: [`DESIGN_SYSTEM.md`](DESIGN_SYSTEM.md)
