@@ -116,3 +116,37 @@ classDiagram
     CoffeeShopSystem *-- MenuItem
     CoffeeShopSystem *-- RevenueSummary
 ```
+
+## Design System
+
+Full spec: [`DESIGN_SYSTEM.md`](DESIGN_SYSTEM.md)
+
+**Palette** — Warm earth tones. Dark browns for the sidebar and buttons, cream beiges for backgrounds and cards, white for surfaces.
+
+| Role | Color |
+|---|---|
+| Brand brown | `#6F4E37` |
+| Page background | `#FFF8F0` |
+| Card background | `#FFFFFF` |
+| Primary text | `#3B2314` |
+| Secondary text | `#8B6B53` |
+| Low-stock warning | `#B7472A` |
+| In-stock success | `#5B7A3A` |
+
+**Typography** — Nunito (bundled TTF). 28 pt display → 11 pt caption. All loaded via `Font.createFont()` at startup; falls back to `SansSerif`.
+
+**Spacing** — 4 px base grid: `4 / 8 / 12 / 16 / 24 / 32 / 48 px`. Border radii: `4 / 8 / 12 / 16 px`.
+
+**Components** (all in `src/main/java/com/cafelumiere/ui/components/`):
+
+| Component | Description |
+|---|---|
+| `RoundedPanel` | White card with rounded corners — used everywhere |
+| `StatCard` | KPI card with brown accent strip on the left |
+| `DrinkCard` | Product card with circular image, price, qty stepper, Add to Cart |
+| `Badge` | Pill label — Warning (red) or Success (green) |
+| `Table` | Alternating-row table with header and empty state |
+| `SidebarNav` | Dark brown gradient sidebar with active/hover nav states |
+| `Buttons` | Factory for Primary / Secondary / Danger `KButton` variants |
+
+**Swing constraints** — No blurred shadows, no gradients with 3+ colors, no CSS animations. State changes (hover, press) are instant color swaps. Images are PNG loaded via `ImageIcon`.
