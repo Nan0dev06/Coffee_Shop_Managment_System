@@ -4,40 +4,57 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * Represents a single customer order.
+ * A single customer order (Tier 2 — Logic class).
  *
- * TODO: Implement this class fully:
- *   - Add fields: orderId, customer, items (List<MenuItem> + quantities), status, timestamp
- *   - Add a constructor that accepts a Customer and a list of ordered items
- *   - Add calculateTotal() that sums item.calculatePrice() * quantity for each item
- *   - Add getters for all fields
- *   - Add an enum OrderStatus { PENDING, PREPARING, COMPLETED, CANCELLED }
+ * TODO: Add all fields from the UML:
+ *   - orderId: int  {unique, auto-increment}  — assigned by CoffeeShopSystem
+ *   - customer: Customer
+ *   - items: List<MenuItem>
+ *   - dateTime: LocalDateTime
+ *
+ * TODO: Implement the constructor:
+ *   public Order(int orderId, Customer customer, List<MenuItem> items) {
+ *       this.orderId = orderId;
+ *       this.customer = customer;
+ *       this.items = items;
+ *       this.dateTime = LocalDateTime.now();
+ *   }
+ *
+ * TODO: Implement the methods from the UML:
+ *
+ *   + addItem(item: MenuItem): void
+ *       items.add(item);
+ *
+ *   + calculateTotal(): double
+ *       return items.stream().mapToDouble(MenuItem::calculatePrice).sum();
+ *
+ *   + getOrderId(): int
+ *       return orderId;
+ *
+ *   + getCustomer(): Customer
+ *       return customer;
+ *
+ * TODO: Wire into CoffeeShopSystem.placeOrder() — it creates the Order,
+ *       sets the orderId, and adds it to the orders list.
+ *
+ * TODO: Once done, update OrderEntryScreen's Place Order popup to use:
+ *       Order order = system.placeOrder(selectedCustomer, selectedItems);
+ *       "Order placed for " + order.getCustomer().getName()
+ *       + " — Total: $" + String.format("%.2f", order.calculateTotal())
  */
 public class Order {
 
     // TODO: private int orderId;
     // TODO: private Customer customer;
-    // TODO: private List<OrderLine> lines;  (OrderLine = MenuItem + quantity)
-    // TODO: private OrderStatus status;
-    // TODO: private LocalDateTime timestamp;
+    // TODO: private List<MenuItem> items;
+    // TODO: private LocalDateTime dateTime;
 
-    // TODO: public Order(Customer customer, List<OrderLine> lines) { ... }
+    // TODO: public Order(int orderId, Customer customer, List<MenuItem> items) { ... }
 
-    // TODO: public double calculateTotal() {
-    //           return lines.stream().mapToDouble(l -> l.item().calculatePrice() * l.quantity()).sum();
-    //       }
-
+    // TODO: public void addItem(MenuItem item) { ... }
+    // TODO: public double calculateTotal() { ... }
     // TODO: public int getOrderId() { ... }
     // TODO: public Customer getCustomer() { ... }
-    // TODO: public List<OrderLine> getLines() { ... }
-    // TODO: public OrderStatus getStatus() { ... }
-    // TODO: public void setStatus(OrderStatus status) { ... }
-    // TODO: public LocalDateTime getTimestamp() { ... }
-
-    /**
-     * TODO: Create this inner record once the class is implemented.
-     * Represents one line in the order: which item and how many.
-     *
-     *   public record OrderLine(MenuItem item, int quantity) {}
-     */
+    // TODO: public List<MenuItem> getItems() { ... }
+    // TODO: public LocalDateTime getDateTime() { ... }
 }

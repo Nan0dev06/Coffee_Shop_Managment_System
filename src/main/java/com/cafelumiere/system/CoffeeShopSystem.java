@@ -4,110 +4,92 @@ import com.cafelumiere.inventory.Inventory;
 import com.cafelumiere.model.Customer;
 import com.cafelumiere.model.MenuItem;
 import com.cafelumiere.model.Order;
-import com.cafelumiere.reports.RevenueSummary;
 
-import java.time.LocalDate;
 import java.util.List;
 
 /**
- * Central backend controller — the single entry point the UI talks to.
- * All screens should call methods on this class instead of managing data themselves.
+ * Central controller for the coffee shop (Tier 3 — Controller class).
+ * All screens should call methods on this class.
  *
- * TODO: Implement this class fully. Suggested order of implementation:
+ * UML fields:
+ *   - customers: List<Customer>
+ *   - orders: List<Order>
+ *   - menu: List<MenuItem>       ← the fixed 10 drinks from Menu.items()
+ *   - inventory: Inventory
  *
- * ── STEP 1: Customer management ──────────────────────────────────────────────
+ * UML methods:
+ *   + login(password: String): boolean
+ *   + placeOrder(customer: Customer, items: List<MenuItem>): Order
+ *   + addCustomer(c: Customer): void
+ *   + removeCustomer(id: int): void
+ *   + sortOrdersByDate(asc: boolean): List<Order>
+ *   + saveData(): void
+ *   + loadData(): void
  *
- * TODO: Add a list of customers and implement:
- *       public List<Customer> getCustomers()
- *   - Returns all registered customers
- *   - OrderEntryScreen calls this to populate the Customer dropdown on startup:
- *       combo.setModel(new DefaultComboBoxModel<>(system.getCustomers().toArray(new Customer[0])))
+ * ── IMPLEMENTATION GUIDE (follow this order) ─────────────────────────────────
  *
- * TODO: public void addCustomer(Customer customer)
- *   - Registers a new customer (if a "New Customer" flow is added later)
+ * STEP 1 — Fields & constructor:
+ *   private List<Customer> customers = new ArrayList<>();
+ *   private List<Order> orders = new ArrayList<>();
+ *   private List<MenuItem> menu = Menu.items();
+ *   private Inventory inventory = new Inventory();
+ *   private int nextOrderId = 1;   // auto-increment helper, not in UML but needed
  *
- * ── STEP 2: Order placement ──────────────────────────────────────────────────
+ * STEP 2 — login(password):
+ *   Simple hardcoded check for now: return "admin".equals(password);
+ *   Wire into LoginScreen: replace the no-op onLogin with system.login(passwordField.getText())
  *
- * TODO: Add an order history list and implement:
- *       public Order placeOrder(Customer customer, List<Order.OrderLine> lines)
- *   - Creates a new Order object with a unique orderId and current timestamp
- *   - Calls inventory.deductForOrder() for each line to reduce stock
- *   - Adds the order to the history list
- *   - Returns the completed Order so the UI can show the confirmation popup:
- *       "Order placed for " + order.getCustomer().getName()
- *       + " — Total: $" + String.format("%.2f", order.calculateTotal())
+ * STEP 3 — addCustomer(c) / removeCustomer(id):
+ *   addCustomer: customers.add(c);
+ *   removeCustomer: customers.removeIf(c -> c.getCustomerId() == id);
+ *   After adding, refresh the combo box in OrderEntryScreen.
  *
- * TODO: public List<Order> getRecentOrders(int limit)
- *   - Returns the most recent N orders (newest first)
- *   - Dashboard calls this to populate the Recent Orders table
+ * STEP 4 — placeOrder(customer, items):
+ *   Order order = new Order(nextOrderId++, customer, items);
+ *   inventory.decrementStock() for each item;
+ *   orders.add(order);
+ *   return order;
+ *   The returned Order is used by OrderEntryScreen's confirmation popup.
  *
- * TODO: public List<Order> getOrdersForDate(LocalDate date)
- *   - Returns all orders placed on a given date
- *   - RevenueSummaryView calls this for the Today's Orders table
+ * STEP 5 — sortOrdersByDate(asc):
+ *   return orders.stream()
+ *       .sorted(asc ? Comparator.comparing(Order::getDateTime)
+ *                   : Comparator.comparing(Order::getDateTime).reversed())
+ *       .collect(Collectors.toList());
+ *   Used by RevenueSummaryView and Dashboard to get ordered lists of orders.
  *
- * ── STEP 3: Inventory ────────────────────────────────────────────────────────
+ * STEP 6 — saveData() / loadData():
+ *   Persist customers and orders to a file (e.g. JSON or plain text).
+ *   Call loadData() in the constructor and saveData() after every placeOrder/addCustomer.
  *
- * TODO: Expose the Inventory object:
- *       public Inventory getInventory()
- *   - InventoryView calls this to get the stock list and restock functionality
+ * ── HOW TO WIRE INTO THE UI ──────────────────────────────────────────────────
  *
- * ── STEP 4: Revenue reporting ────────────────────────────────────────────────
+ * In Main.java, create ONE shared instance:
+ *   CoffeeShopSystem system = new CoffeeShopSystem();
  *
- * TODO: public RevenueSummary getRevenueSummary(LocalDate date)
- *   - Calls RevenueSummary.from(date, getOrdersForDate(date))
- *   - RevenueSummaryView calls this to populate the 4 stat cards
- *
- * ── STEP 5: Dashboard KPIs ───────────────────────────────────────────────────
- *
- * TODO: public double getTotalRevenue()
- *   - Sum of all completed order totals — shown in Dashboard "Total Revenue" card
- *
- * TODO: public int getTotalOrderCount()
- *   - Total number of orders ever placed — Dashboard "Orders" card
- *
- * TODO: public int getTotalCustomerCount()
- *   - Number of registered customers — Dashboard "Customers" card
- *
- * TODO: public double getAvgOrderValue()
- *   - getTotalRevenue() / getTotalOrderCount() — Dashboard "Avg Order Value" card
- *
- * TODO: public Map<String, Integer> getSalesByDrink()
- *   - Returns drink name → number of units sold
- *   - Dashboard bar chart calls this and updates each series value from 0 to real count
- *
- * ── HOW TO PASS THIS INTO THE UI ─────────────────────────────────────────────
- *
- * In Main.java, create one shared instance:
- *       CoffeeShopSystem system = new CoffeeShopSystem();
- * Then pass it into each screen constructor that needs it:
- *       new Dashboard(system)
- *       new OrderEntryScreen(system, () -> onNavSelect("dashboard"))
- *       new InventoryView(system)
- *       new RevenueSummaryView(system)
+ * Pass it into each screen:
+ *   new Dashboard(system)
+ *   new OrderEntryScreen(system, () -> onNavSelect("dashboard"))
+ *   new InventoryView(system)
+ *   new RevenueSummaryView(system)
  */
 public class CoffeeShopSystem {
 
-    // TODO: private final List<Customer> customers = new ArrayList<>();
-    // TODO: private final List<Order> orderHistory = new ArrayList<>();
-    // TODO: private final Inventory inventory = new Inventory();
-    // TODO: private int nextOrderId = 1;
+    // TODO: private List<Customer> customers;
+    // TODO: private List<Order> orders;
+    // TODO: private List<MenuItem> menu;
+    // TODO: private Inventory inventory;
 
-    // TODO: public CoffeeShopSystem() { }  (load seed data here if needed)
+    // TODO: public CoffeeShopSystem() { loadData(); }
 
-    // TODO: public List<Customer> getCustomers() { ... }
-    // TODO: public void addCustomer(Customer customer) { ... }
+    // TODO: public boolean login(String password) { ... }
+    // TODO: public Order placeOrder(Customer customer, List<MenuItem> items) { ... }
+    // TODO: public void addCustomer(Customer c) { ... }
+    // TODO: public void removeCustomer(int id) { ... }
+    // TODO: public List<Order> sortOrdersByDate(boolean asc) { ... }
+    // TODO: public void saveData() { ... }
+    // TODO: public void loadData() { ... }
 
-    // TODO: public Order placeOrder(Customer customer, List<Order.OrderLine> lines) { ... }
-    // TODO: public List<Order> getRecentOrders(int limit) { ... }
-    // TODO: public List<Order> getOrdersForDate(LocalDate date) { ... }
-
-    // TODO: public Inventory getInventory() { ... }
-
-    // TODO: public RevenueSummary getRevenueSummary(LocalDate date) { ... }
-
-    // TODO: public double getTotalRevenue() { ... }
-    // TODO: public int getTotalOrderCount() { ... }
-    // TODO: public int getTotalCustomerCount() { ... }
-    // TODO: public double getAvgOrderValue() { ... }
-    // TODO: public Map<String, Integer> getSalesByDrink() { ... }
+    // TODO: public List<Customer> getCustomers() { return customers; }
+    // TODO: public Inventory getInventory() { return inventory; }
 }

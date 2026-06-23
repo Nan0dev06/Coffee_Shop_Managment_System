@@ -2,16 +2,20 @@ package com.cafelumiere.model;
 
 /**
  * A hot-served drink (e.g. Americano, Latte).
+ * Extends MenuItem — matches the UML inheritance arrow.
  *
- * TODO: If size options are added (Small / Medium / Large), apply a price
- *       multiplier inside calculatePrice() based on the chosen size.
- *       Example: Small = basePrice, Medium = basePrice + 0.50, Large = basePrice + 1.00
+ * UML fields:
+ *   - temperature: String
+ *
+ * UML methods:
+ *   + calculatePrice(): double  {override}
+ *
+ * TODO: Implement calculatePrice() with any pricing logic your team decides on.
+ *       For now it returns basePrice unchanged.
  */
 public class HotDrink extends MenuItem {
 
     private final String temperature;
-
-    // TODO: private Size size;  (Size enum: SMALL, MEDIUM, LARGE)
 
     public HotDrink(String name, double basePrice) {
         this(name, basePrice, "Hot");
@@ -28,7 +32,6 @@ public class HotDrink extends MenuItem {
 
     @Override
     public double calculatePrice() {
-        // TODO: apply size surcharge once Size is added
         return getBasePrice();
     }
 }

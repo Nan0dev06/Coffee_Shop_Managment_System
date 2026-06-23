@@ -1,61 +1,67 @@
 package com.cafelumiere.inventory;
 
 import com.cafelumiere.model.MenuItem;
-import java.util.List;
+import java.util.Map;
 
 /**
- * Manages ingredient stock levels for the café.
+ * Manages ingredient stock levels (Tier 2 — Logic class).
  *
- * TODO: Implement this class fully:
+ * UML fields:
+ *   - ingredientStock: Map<String, Integer>   (ingredient name → quantity)
+ *   - lowStockThreshold: int
  *
- * 1. Define an IngredientStock inner class / record:
- *       public record IngredientStock(String ingredient, double quantity, String unit) {}
- *    This is one row in the Inventory screen table.
+ * UML methods:
+ *   + checkAvailability(item: MenuItem): boolean
+ *   + decrementStock(item: MenuItem): void
+ *   + isLowStock(ingredient: String): boolean
+ *   + restock(ingredient: String, amount: int): void
  *
- * 2. Store a list of IngredientStock objects (the café's pantry):
- *       private List<IngredientStock> stock;
- *    Populate it in the constructor with starting quantities for each ingredient
- *    (e.g. Coffee Beans, Milk, Sugar, Ice, Cups).
+ * TODO: Implement all fields and methods:
  *
- * 3. Implement getAll():
- *       public List<IngredientStock> getAll() { return Collections.unmodifiableList(stock); }
- *    InventoryView calls this to populate the table rows.
+ *   private Map<String, Integer> ingredientStock = new HashMap<>();
+ *   private int lowStockThreshold = 10;
  *
- * 4. Implement deductForOrder(MenuItem item, int quantity):
- *    When an order is placed, subtract the required ingredient amounts.
- *    Example: one Latte uses 18g coffee + 200ml milk.
- *    Define a recipe map: Map<String, Map<String, Double>> recipes
- *    keyed by drink name → ingredient → amount per unit.
+ *   public Inventory() {
+ *       // Add starting stock for each ingredient:
+ *       // Coffee Beans, Water, Milk, Ice Cubes, Cocoa Powder,
+ *       // Bug Spray Syrup (Java Easter Egg), String Sugar (Java Easter Egg)
+ *       ingredientStock.put("Coffee Beans", 100);
+ *       ingredientStock.put("Milk", 80);
+ *       // ... etc
+ *   }
  *
- * 5. Implement isLowStock(IngredientStock s):
- *       public boolean isLowStock(IngredientStock s) { return s.quantity() < LOW_STOCK_THRESHOLD; }
- *    InventoryView uses this to show a "Low Stock" badge (Badge.Variant.WARNING)
- *    vs an "OK" badge (Badge.Variant.SUCCESS) in the Status column.
+ *   + checkAvailability(item): boolean
+ *       Check if all ingredients needed for this item are above 0.
+ *       Returns true if the drink can be made, false if any ingredient is out.
  *
- * 6. Implement restock(String ingredient, double amount):
- *    Called when the Restock button in InventoryView is clicked.
- *    Adds the given amount back to the ingredient's quantity.
+ *   + decrementStock(item): void
+ *       Subtract the required ingredient amounts for this drink.
+ *       Called by CoffeeShopSystem.placeOrder() after an order is confirmed.
  *
- * HOW TO WIRE INTO THE UI (InventoryView.java):
- *   - Pass an Inventory instance into the InventoryView constructor
- *   - In tableCard(), call inventory.getAll() and loop: table.addRow(...)
- *   - In the Status column, pass a Badge component based on inventory.isLowStock(s)
- *   - In the action column, pass a Restock KButton whose ActionListener calls
- *     inventory.restock(ingredient, amount) then refreshes the table
+ *   + isLowStock(ingredient): boolean
+ *       return ingredientStock.getOrDefault(ingredient, 0) < lowStockThreshold;
+ *       Used by InventoryView to decide whether to show a "Low Stock" or "OK" badge.
+ *
+ *   + restock(ingredient, amount): void
+ *       ingredientStock.merge(ingredient, amount, Integer::sum);
+ *       Called when the Restock button in InventoryView is clicked.
+ *
+ * TODO: Wire into InventoryView:
+ *   - Call system.getInventory().ingredientStock.entrySet() to get rows for the table
+ *   - For each entry: show ingredient name, quantity, and isLowStock() badge
+ *   - Restock button calls system.getInventory().restock(name, amount)
  */
 public class Inventory {
 
-    // TODO: private static final double LOW_STOCK_THRESHOLD = 10.0;
-    // TODO: private List<IngredientStock> stock;
-    // TODO: private Map<String, Map<String, Double>> recipes;
+    // TODO: private Map<String, Integer> ingredientStock;
+    // TODO: private int lowStockThreshold;
 
-    // TODO: public Inventory() { ... }  initialise stock and recipes here
+    // TODO: public Inventory() { ... }
 
-    // TODO: public List<IngredientStock> getAll() { ... }
+    // TODO: public boolean checkAvailability(MenuItem item) { ... }
+    // TODO: public void decrementStock(MenuItem item) { ... }
+    // TODO: public boolean isLowStock(String ingredient) { ... }
+    // TODO: public void restock(String ingredient, int amount) { ... }
 
-    // TODO: public void deductForOrder(MenuItem item, int quantity) { ... }
-
-    // TODO: public boolean isLowStock(IngredientStock s) { ... }
-
-    // TODO: public void restock(String ingredient, double amount) { ... }
+    // TODO: public Map<String, Integer> getIngredientStock() { return ingredientStock; }
 }

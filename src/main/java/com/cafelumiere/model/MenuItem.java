@@ -1,22 +1,22 @@
 package com.cafelumiere.model;
 
 /**
- * Abstract menu item. Concrete subclasses ({@link HotDrink}, {@link ColdDrink})
- * preserve the inheritance/polymorphism pattern from the project class diagram.
+ * Abstract menu item (Tier 1 — Data class).
+ * Concrete subclasses {@link HotDrink} and {@link ColdDrink} each override
+ * calculatePrice() — this is the polymorphism pattern from the UML.
  *
- * TODO: Consider extending for backend use:
- *   - Add a description field (shown on the order card or receipt)
- *   - Add an isAvailable flag so out-of-stock items can be greyed out in the UI
- *   - If pricing gets more complex (e.g. size upgrades, seasonal pricing), override
- *     calculatePrice() in subclasses rather than changing the base price here
+ * Fields and methods match the UML exactly:
+ *   - name: String
+ *   - basePrice: double
+ *   + getName(): String
+ *   + calculatePrice(): double  {abstract}
+ *
+ * No other fields or methods should be added here unless the UML is updated.
  */
 public abstract class MenuItem {
 
     private final String name;
     private final double basePrice;
-
-    // TODO: private String description;
-    // TODO: private boolean isAvailable = true;
 
     protected MenuItem(String name, double basePrice) {
         this.name = name;
@@ -31,10 +31,5 @@ public abstract class MenuItem {
         return basePrice;
     }
 
-    // TODO: public String getDescription() { ... }
-    // TODO: public boolean isAvailable() { ... }
-    // TODO: public void setAvailable(boolean available) { ... }
-
-    /** Price shown on the order screen and used in Order.calculateTotal(). */
     public abstract double calculatePrice();
 }
