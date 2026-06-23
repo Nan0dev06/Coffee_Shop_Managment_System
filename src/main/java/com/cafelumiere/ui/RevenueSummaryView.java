@@ -21,6 +21,25 @@ import java.util.List;
 /**
  * Revenue summary: date, KPI stat cards and the day's orders. Metrics are empty
  * placeholders pending the backend; only today's date is shown.
+ *
+ * TODO (backend wiring):
+ *   1. Change constructor to accept CoffeeShopSystem:
+ *         public RevenueSummaryView(CoffeeShopSystem system)
+ *   2. In statRow(), replace the 4 "—" StatCards with real values:
+ *         RevenueSummary summary = system.getRevenueSummary(LocalDate.now());
+ *         new StatCard("Revenue Today",   String.format("$%.2f", summary.getTotalRevenue()))
+ *         new StatCard("Orders Today",    String.valueOf(summary.getOrderCount()))
+ *         new StatCard("Avg Order Value", String.format("$%.2f", summary.getAvgOrderValue()))
+ *         new StatCard("Best Seller",     summary.getBestSellingItem())
+ *   3. In ordersCard(), replace addEmptyState() with real rows:
+ *         for (Order o : system.getOrdersForDate(LocalDate.now())) {
+ *             String items = o.getLines().stream()
+ *                 .map(l -> l.item().getName() + " x" + l.quantity())
+ *                 .collect(Collectors.joining(", "));
+ *             table.addRow("#" + o.getOrderId(), o.getCustomer().getName(),
+ *                          items, String.format("$%.2f", o.calculateTotal()));
+ *         }
+ *   4. Add a refresh() method so it reloads the summary for today when navigated to.
  */
 public class RevenueSummaryView extends ContentPage {
 

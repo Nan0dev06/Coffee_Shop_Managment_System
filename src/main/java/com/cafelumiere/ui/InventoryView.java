@@ -15,6 +15,24 @@ import java.util.List;
 /**
  * Inventory: ingredient stock list. Rows are supplied by the backend (low-stock
  * badges and Restock buttons will render per row then); empty in the prototype.
+ *
+ * TODO (backend wiring):
+ *   1. Change constructor to accept CoffeeShopSystem:
+ *         public InventoryView(CoffeeShopSystem system)
+ *   2. In tableCard(), replace addEmptyState() with real rows:
+ *         for (Inventory.IngredientStock s : system.getInventory().getAll()) {
+ *             Badge statusBadge = system.getInventory().isLowStock(s)
+ *                 ? new Badge("Low Stock", Badge.Variant.WARNING)
+ *                 : new Badge("OK",        Badge.Variant.SUCCESS);
+ *             KButton restock = Buttons.create("Restock", Buttons.Variant.SECONDARY, Buttons.Size.SM);
+ *             restock.addActionListener(e -> {
+ *                 system.getInventory().restock(s.ingredient(), 50.0);
+ *                 // TODO: refresh the table after restocking
+ *             });
+ *             table.addRow(s.ingredient(), String.valueOf(s.quantity()), s.unit(), statusBadge, restock);
+ *         }
+ *   3. Add a refresh() method that clears and repopulates the table,
+ *      called after any restock action or after a new order deducts stock.
  */
 public class InventoryView extends ContentPage {
 

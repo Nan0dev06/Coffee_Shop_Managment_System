@@ -32,6 +32,25 @@ import java.util.List;
  * Dashboard: KPI stat row, popular-drinks bar chart and recent orders. All
  * metrics are empty placeholders — the backend will supply the real values.
  * Only the fixed drink names (chart categories) come from the menu.
+ *
+ * TODO (backend wiring):
+ *   1. Change constructor to accept CoffeeShopSystem:
+ *         public Dashboard(CoffeeShopSystem system)
+ *   2. Replace the 4 StatCard "—" values with real KPIs:
+ *         new StatCard("Total Revenue",   String.format("$%.2f", system.getTotalRevenue()))
+ *         new StatCard("Orders",          String.valueOf(system.getTotalOrderCount()))
+ *         new StatCard("Customers",       String.valueOf(system.getTotalCustomerCount()))
+ *         new StatCard("Avg Order Value", String.format("$%.2f", system.getAvgOrderValue()))
+ *   3. In buildChart(), set real sales data per drink:
+ *         Map<String, Integer> sales = system.getSalesByDrink();
+ *         // for each series at index i: y.set(i, sales.getOrDefault(names.get(i), 0))
+ *   4. In ordersCard(), populate the recent orders table:
+ *         for (Order o : system.getRecentOrders(5)) {
+ *             table.addRow("#" + o.getOrderId(), o.getCustomer().getName(),
+ *                          String.format("$%.2f", o.calculateTotal()),
+ *                          o.getTimestamp().toLocalTime().toString());
+ *         }
+ *   5. Add a refresh() method so Main can call dashboard.refresh() after each new order.
  */
 public class Dashboard extends ContentPage {
 
