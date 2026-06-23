@@ -1,20 +1,8 @@
 package com.cafelumiere.model;
 
-/**
- * An iced/cold-served drink (e.g. Iced Latte).
- * Extends MenuItem — matches the UML inheritance arrow.
- *
- * UML fields:
- *   - iceLevel: String
- *
- * UML methods:
- *   + calculatePrice(): double  {override}
- *
- * TODO: Implement calculatePrice() with any pricing logic your team decides on.
- *       For now it returns basePrice unchanged.
- */
-public class ColdDrink extends MenuItem {
 
+public class ColdDrink extends MenuItem {
+    //re
     private final String iceLevel;
 
     public ColdDrink(String name, double basePrice) {
@@ -31,7 +19,16 @@ public class ColdDrink extends MenuItem {
     }
 
     @Override
-    public double calculatePrice() {
-        return getBasePrice();
+public double calculatePrice() {
+    switch (getIceLevel().toLowerCase()) {
+        case "regular":
+            return getBasePrice() + 0.30;
+        case "light":
+            return getBasePrice() + 0.15; 
+        case "extra":
+            return getBasePrice() + 0.45; 
+        default:
+            return getBasePrice(); 
     }
+}
 }
