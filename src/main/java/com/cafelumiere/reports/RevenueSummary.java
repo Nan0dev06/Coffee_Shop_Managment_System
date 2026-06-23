@@ -1,8 +1,9 @@
 package com.cafelumiere.reports;
 
-import com.cafelumiere.model.Order;
 import java.time.LocalDate;
 import java.util.List;
+
+import com.cafelumiere.model.Order;
 
 /**
  * Aggregates completed orders into revenue KPIs for a given date.
@@ -55,14 +56,19 @@ import java.util.List;
  */
 public class RevenueSummary {
 
-    // TODO: private LocalDate date;
-    // TODO: private double totalRevenue;
-    // TODO: private int orderCount;
-    // TODO: private String bestSellingItem;
-
-    // TODO: public RevenueSummary(LocalDate date, List<Order> orders) { ... }
-
+    private LocalDate date;
+    private double totalRevenue;
+    private int orderCount;
+    private String bestSellingItem;
+    
+    public RevenueSummary(LocalDate date, List<Order> orders){
+            this.date = date;
+            this.orderCount = orderCount;
+ }
     // TODO: public String calculateBestSeller(List<Order> orders) { ... }
+    
+
+    
     // TODO: public String generateReport() { ... }
 
     // TODO: public LocalDate getDate() { ... }

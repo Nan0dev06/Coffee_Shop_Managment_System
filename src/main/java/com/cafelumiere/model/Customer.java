@@ -3,30 +3,27 @@ package com.cafelumiere.model;
 /**
  * A café customer (Tier 1 — Data class).
  *
- * TODO: Add the missing fields from the UML:
- *   - phone: String
- *   - address: String
- *
- * TODO: Add the missing getters from the UML:
- *   - getPhone(): String
- *   - getAddress(): String
- *
- * TODO: Update the constructor to accept phone and address.
+ * 
  *
  * TODO: Once Customer is complete, wire it into CoffeeShopSystem.addCustomer()
  *       and populate the combo box in OrderEntryScreen with system.getCustomers().
  */
 public class Customer {
-
+    private static int idTracker = 0;
     private final int customerId;
     private final String name;
-    // TODO: private String phone;
-    // TODO: private String address;
+    
+    private String phone;
 
-    public Customer(int customerId, String name) {
-        this.customerId = customerId;
+   
+    private String address;
+    public Customer(int customerId, String name,String phone,String address) {
+        idTracker++;
+        this.customerId = idTracker; 
         this.name = name;
-        // TODO: also accept phone and address here
+        this.phone=phone;
+        this.address=address;
+        
     }
 
     public int getCustomerId() {
@@ -37,9 +34,15 @@ public class Customer {
         return name;
     }
 
-    // TODO: public String getPhone() { return phone; }
-    // TODO: public String getAddress() { return address; }
+    public String getPhone() {
+        return phone;
+    }
+    
 
+
+    public String getAddress() {
+        return address;
+    }
     @Override
     public String toString() {
         return name;
