@@ -1,0 +1,29 @@
+# Maven
+target/
+*.class
+
+# IDE - IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# IDE - Eclipse
+.classpath
+.project
+.settings/
+
+# IDE - NetBeans
+nbproject/
+build/
+nbbuild/
+dist/
+nbdist/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
