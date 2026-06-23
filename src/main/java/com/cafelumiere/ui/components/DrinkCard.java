@@ -1,19 +1,22 @@
 package com.cafelumiere.ui.components;
 
-import com.cafelumiere.ui.theme.Theme;
-import com.k33ptoo.components.KButton;
-
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+
+import com.cafelumiere.ui.theme.Theme;
+import com.k33ptoo.components.KButton;
+
 
 /**
  * Product card for the Order Entry screen: circular placeholder (first letter),
@@ -36,7 +39,17 @@ public class DrinkCard extends RoundedPanel {
         setPreferredSize(fixed);
         setMaximumSize(fixed);
 
-        CirclePlaceholder circle = new CirclePlaceholder(name.replace("Iced ", "").charAt(0));
+        String prefix = name.startsWith("Iced ") ? "" : "hot_";
+        String filename = "/images/" + prefix + name.toLowerCase().replace(" ", "_") + ".png";
+        ImageIcon icon;
+        try {
+             java.io.InputStream stream = getClass().getResourceAsStream(filename);
+             icon= new ImageIcon(stream.readAllBytes());
+
+        } catch (Exception e) {
+            icon=null;
+        }
+        CirclePlaceholder circle = new CirclePlaceholder(icon);
         circle.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JLabel nameLbl = new JLabel(name, SwingConstants.CENTER);
@@ -105,10 +118,11 @@ public class DrinkCard extends RoundedPanel {
 
     /** 120px circle (beige-100) with a single centred placeholder letter. */
     private static class CirclePlaceholder extends JComponent {
-        private final char letter;
+        
+        ImageIcon icon;
 
-        CirclePlaceholder(char letter) {
-            this.letter = letter;
+        CirclePlaceholder(ImageIcon icon) {
+            this.icon=icon;
             Dimension d = new Dimension(120, 120);
             setPreferredSize(d);
             setMaximumSize(d);
@@ -119,19 +133,16 @@ public class DrinkCard extends RoundedPanel {
         protected void paintComponent(Graphics g) {
             Graphics2D g2 = (Graphics2D) g.create();
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
-                    RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-            int d = Math.min(getWidth(), getHeight());
+            int d = Math.min(getWidth(),getHeight());
+            
             int x = (getWidth() - d) / 2;
             g2.setColor(Theme.BEIGE_100);
             g2.fillOval(x, 0, d, d);
-            g2.setColor(Theme.BROWN_400);
-            g2.setFont(Theme.font(java.awt.Font.BOLD, 36));
-            String s = String.valueOf(letter);
-            java.awt.FontMetrics fm = g2.getFontMetrics();
-            int tx = x + (d - fm.stringWidth(s)) / 2;
-            int ty = (d - fm.getHeight()) / 2 + fm.getAscent();
-            g2.drawString(s, tx, ty);
+            if(icon !=null){
+                g2.setClip(new java.awt.geom.Ellipse2D.Float(x, 0, d, d));
+                g2.drawImage(icon.getImage(), x, 0,d,d, this);
+            }
+    
             g2.dispose();
         }
     }
