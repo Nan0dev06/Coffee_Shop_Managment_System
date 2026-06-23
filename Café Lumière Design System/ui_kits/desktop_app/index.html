@@ -1,0 +1,89 @@
+<!-- @dsCard group="Desktop App" viewport="1200x700" name="Café Lumière App" subtitle="Interactive 5-screen desktop app recreation" -->
+<!-- @startingPoint section="UI Kits" subtitle="Full desktop app with sidebar navigation" viewport="1200x700" -->
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Café Lumière — Desktop App UI Kit</title>
+<link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<script type="text/babel" src="LoginScreen.jsx"></script>
+<script type="text/babel" src="DashboardScreen.jsx"></script>
+<script type="text/babel" src="OrderEntryScreen.jsx"></script>
+<script type="text/babel" src="InventoryScreen.jsx"></script>
+<script type="text/babel" src="RevenueScreen.jsx"></script>
+<style>
+  * { margin: 0; box-sizing: border-box; }
+  html, body, #root { height: 100%; }
+  body { font-family: var(--font-family); background: var(--surface-page); }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { SidebarNav } = window.CafLumiReDesignSystem_77c5a3;
+
+const navItems = [
+  { id: 'dashboard', label: 'Dashboard', icon: '⊞' },
+  { id: 'orders', label: 'Orders', icon: '☰' },
+  { id: 'inventory', label: 'Inventory', icon: '▦' },
+  { id: 'revenue', label: 'Revenue', icon: '◔' },
+  { id: 'logout', label: 'Log Out', icon: '⇥' },
+];
+
+const appShellStyles = {
+  shell: { display: 'flex', height: '100%', width: '100%' },
+  main: { flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' },
+};
+
+function App() {
+  const [screen, setScreen] = React.useState('login');
+  const [loggedIn, setLoggedIn] = React.useState(false);
+
+  const handleNav = (id) => {
+    if (id === 'logout') {
+      setLoggedIn(false);
+      setScreen('login');
+    } else {
+      setScreen(id);
+    }
+  };
+
+  const handleLogin = () => {
+    setLoggedIn(true);
+    setScreen('dashboard');
+  };
+
+  if (!loggedIn) {
+    return React.createElement(window.LoginScreen, { onLogin: handleLogin });
+  }
+
+  const screenMap = {
+    dashboard: window.DashboardScreen,
+    orders: window.OrderEntryScreen,
+    inventory: window.InventoryScreen,
+    revenue: window.RevenueScreen,
+  };
+
+  const CurrentScreen = screenMap[screen] || window.DashboardScreen;
+
+  return React.createElement('div', { style: appShellStyles.shell },
+    React.createElement(SidebarNav, {
+      brandName: 'Café Lumière',
+      activeId: screen,
+      onSelect: handleNav,
+      items: navItems,
+    }),
+    React.createElement('div', { style: appShellStyles.main },
+      React.createElement(CurrentScreen)
+    )
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App));
+</script>
+</body>
+</html>
