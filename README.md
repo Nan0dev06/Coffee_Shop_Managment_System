@@ -12,6 +12,7 @@ Café Lumière lets a single owner manage daily café operations: taking orders,
 - **Inventory tracking** — ingredient stock decreases automatically per order; low-stock ingredients are flagged
 - **Customer management** — add and remove customers
 - **Revenue summary** — daily total revenue, order count, and best-selling drink (by order frequency)
+- **Animated sidebar** — collapsible icon rail (240 px → 72 px) with a smooth slide driven by the Universal Tween Engine; click the hamburger to toggle
 - **Owner login** — single-owner access gate, no multi-user roles
 - **Persistence** — all data (customers, orders, menu, inventory) is saved to file on close and loaded on startup
 ## Tech stack
@@ -22,6 +23,7 @@ Café Lumière lets a single owner manage daily café operations: taking orders,
 | UI | Java Swing |
 | UI components | [KControls](https://github.com/k33ptoo/KControls) (`KButton`, `KGradientPanel`) |
 | Charts | [XChart](https://github.com/knowm/XChart) (bar chart for popular drinks) |
+| Animation | [Universal Tween Engine](https://github.com/arcnor/universal-tween-engine) (sidebar slide, easing curves) |
 | Persistence | Java file serialization (`Serializable`, `ObjectOutputStream` / `ObjectInputStream`) — no database |
  
 ## Architecture
@@ -170,6 +172,7 @@ Coffee_Shop_Management_System/
     └── resources/
         ├── fonts/                   # Nunito TTF files (400, 600, 700 weights)
         ├── images/                  # Drink photos (hot_*.png / iced_*.png)
+        ├── icons/                   # White PNG nav icons (dashboard, orders, inventory, revenue, menu)
         └── data/                    # Save files written by saveData() / loadData()
 ```
 
@@ -202,7 +205,7 @@ Full spec: [`DESIGN_SYSTEM.md`](DESIGN_SYSTEM.md)
 | `DrinkCard` | Product card with circular image, price, qty stepper, Add to Cart |
 | `Badge` | Pill label — Warning (red) or Success (green) |
 | `Table` | Alternating-row table with header and empty state |
-| `SidebarNav` | Dark brown gradient sidebar with active/hover nav states |
+| `SidebarNav` | Dark brown gradient sidebar; hamburger toggle slides it between full (240 px) and icon rail (72 px) |
 | `Buttons` | Factory for Primary / Secondary / Danger `KButton` variants |
 
 **Swing constraints** — No blurred shadows, no gradients with 3+ colors, no CSS animations. State changes (hover, press) are instant color swaps. Images are PNG loaded via `ImageIcon`.
