@@ -21,10 +21,14 @@ import java.awt.Graphics2D;
  */
 public class StatCard extends RoundedPanel {
 
+    // convenience constructor — accent strip shown by default
     public StatCard(String label, String value) {
         this(label, value, true);
     }
 
+    // label — small secondary text above the value (e.g. "Total Revenue")
+    // value — large bold number/text (e.g. "$1,240.00" or "—" before backend is wired)
+    // showAccent — whether to show the 4px brown gradient strip on the left edge
     public StatCard(String label, String value, boolean showAccent) {
         setLayout(new BorderLayout());
         setRadius(Theme.RADIUS_LG);
@@ -33,22 +37,24 @@ public class StatCard extends RoundedPanel {
         setMinimumSize(new Dimension(Theme.CARD_MIN_WIDTH, 92));
         setPreferredSize(new Dimension(230, 96));
 
+        // 4px coloured strip on the left edge of the card
         if (showAccent) {
             add(new AccentStrip(), BorderLayout.WEST);
         }
 
+        // vertical stack: metric label on top, large value below
         JPanel content = new JPanel();
         content.setOpaque(false);
         content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
         content.setBorder(BorderFactory.createEmptyBorder(
                 Theme.S24, Theme.S24, Theme.S24, Theme.S24));
 
-        JLabel labelLbl = new JLabel(label);
+        JLabel labelLbl = new JLabel(label); // e.g. "Orders"
         labelLbl.setFont(Theme.labelPlain());
         labelLbl.setForeground(Theme.TEXT_SECONDARY);
         labelLbl.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        JLabel valueLbl = new JLabel(value);
+        JLabel valueLbl = new JLabel(value); // e.g. "42" or "—"
         valueLbl.setFont(Theme.heading());
         valueLbl.setForeground(Theme.TEXT_PRIMARY);
         valueLbl.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -63,7 +69,7 @@ public class StatCard extends RoundedPanel {
     /** 4px vertical 2-colour gradient strip (brown-600 → brown-400). */
     private static class AccentStrip extends JComponent {
         AccentStrip() {
-            setPreferredSize(new Dimension(4, 10));
+            setPreferredSize(new Dimension(4, 10)); // only width matters; height fills the card
         }
 
         @Override

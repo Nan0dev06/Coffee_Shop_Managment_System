@@ -45,21 +45,22 @@ import java.awt.GridLayout;
  */
 public class OrderEntryScreen extends ContentPage {
 
-    private static final int COLUMNS = 5;
+    private static final int COLUMNS = 5; // drinks per row in the grid
 
-    private JComboBox<Customer> combo;
+    private JComboBox<Customer> combo; // field so Place Order can read the selection
 
     public OrderEntryScreen(Runnable onPlaceOrder) {
-        super("Order Entry");
+        super("Order Entry"); // sets page title and beige background via ContentPage
 
-        add(topBar(onPlaceOrder));
+        add(topBar(onPlaceOrder)); // customer selector + Place Order button
         add(Box.createVerticalStrut(Theme.S24));
-        add(drinkGrid());
+        add(drinkGrid());          // 5-column grid of drink cards
         add(Box.createVerticalGlue());
     }
 
     /** Customer selector on the left, Place Order button on the right. */
     private JComponent topBar(Runnable onPlaceOrder) {
+        // horizontal bar pinned to full width, fixed 64px tall
         JPanel bar = new JPanel();
         bar.setOpaque(false);
         bar.setLayout(new BoxLayout(bar, BoxLayout.X_AXIS));
@@ -69,6 +70,7 @@ public class OrderEntryScreen extends ContentPage {
         JPanel selector = customerSelector();
         selector.setAlignmentY(Component.BOTTOM_ALIGNMENT);
 
+        // primary brown button — shows confirmation popup, then navigates to dashboard
         KButton placeOrder = Buttons.create("Place Order", Buttons.Variant.PRIMARY, Buttons.Size.LG);
         placeOrder.setAlignmentY(Component.BOTTOM_ALIGNMENT);
         placeOrder.addActionListener(e -> {
@@ -77,6 +79,7 @@ public class OrderEntryScreen extends ContentPage {
             String customerName = selected != null ? selected.getName() : "Guest";
             String total = "$0.00";
 
+            // apply design-system colors to the native JOptionPane dialog
             UIManager.put("OptionPane.background", Theme.SURFACE_CARD);
             UIManager.put("Panel.background", Theme.SURFACE_CARD);
             UIManager.put("OptionPane.messageForeground", Theme.TEXT_PRIMARY);
@@ -91,15 +94,16 @@ public class OrderEntryScreen extends ContentPage {
                 "Order Confirmed",
                 JOptionPane.INFORMATION_MESSAGE
             );
-            onPlaceOrder.run();
+            onPlaceOrder.run(); // navigate back to dashboard after confirming
         });
 
         bar.add(selector);
-        bar.add(Box.createHorizontalGlue());
+        bar.add(Box.createHorizontalGlue()); // pushes Place Order to the right edge
         bar.add(placeOrder);
         return bar;
     }
 
+    // label + combo box wrapped vertically; combo is empty until backend provides customers
     private JPanel customerSelector() {
         JPanel wrap = new JPanel();
         wrap.setOpaque(false);
@@ -126,6 +130,7 @@ public class OrderEntryScreen extends ContentPage {
         return wrap;
     }
 
+    // 5-column grid — one DrinkCard per menu item (name + calculated price)
     private JComponent drinkGrid() {
         JPanel grid = new JPanel(new GridLayout(0, COLUMNS, Theme.S16, Theme.S16));
         grid.setOpaque(false);

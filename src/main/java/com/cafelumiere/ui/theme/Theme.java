@@ -6,15 +6,13 @@ import java.awt.GraphicsEnvironment;
 import java.io.InputStream;
 
 /**
- * Design tokens for Café Lumière, translated 1:1 from the imported Claude
- * design system (docs/design-system tokens/*.css). This is the single source
- * of truth for colors, spacing, radii and typography in the Swing prototype.
- *
- * 
+ * All design tokens for Café Lumière — colors, spacing, radii, typography.
+ * Single source of truth: every UI file imports from here, nothing is hardcoded.
+ * Full spec in DESIGN_SYSTEM.md at the repo root.
  */
 public final class Theme {
 
-    private Theme() {}
+    private Theme() {} // utility class — not instantiated
 
     // ── Brown Scale (Primary) ──
     public static final Color BROWN_900 = hex("#3B2314");
@@ -98,11 +96,11 @@ public final class Theme {
     public static final int ROW_MIN_HEIGHT = 44;
     public static final int ICON_SIZE = 20;
 
-    // ── Typography (Swing pt sizes per typography.css) ──
+    // ── Typography (Swing pt sizes — display→caption scale) ──
     public static final int SIZE_DISPLAY = 28, SIZE_HEADING = 22, SIZE_SUBHEADING = 16,
                             SIZE_BODY = 14, SIZE_LABEL = 12, SIZE_CAPTION = 11;
 
-    private static String fontFamily = "SansSerif"; // fallback until fonts load
+    private static String fontFamily = "SansSerif"; // replaced with "Nunito" after loadFonts()
 
     /**
      * Loads the bundled Nunito TTFs and registers them with the graphics
@@ -129,22 +127,22 @@ public final class Theme {
         }
     }
 
-    // ── Font helpers (weight via Font style; Nunito static faces are registered
-    //    under the same family, so PLAIN/BOLD select regular/bold; semibold maps
-    //    to BOLD as Swing has no semibold style) ──
+    // ── Font helpers ──
+    // Nunito has 3 registered faces (400/600/700); Swing maps PLAIN→400, BOLD→700.
+    // Use these named helpers everywhere instead of calling new Font() directly.
     public static Font font(int style, int size) {
         return new Font(fontFamily, style, size);
     }
 
-    public static Font display()    { return font(Font.BOLD,  SIZE_DISPLAY); }
-    public static Font heading()    { return font(Font.BOLD,  SIZE_HEADING); }
-    public static Font subheading() { return font(Font.BOLD,  SIZE_SUBHEADING); }
-    public static Font body()       { return font(Font.PLAIN, SIZE_BODY); }
-    public static Font bodyBold()   { return font(Font.BOLD,  SIZE_BODY); }
-    public static Font label()      { return font(Font.BOLD,  SIZE_LABEL); }
-    public static Font labelPlain() { return font(Font.PLAIN, SIZE_LABEL); }
-    public static Font caption()    { return font(Font.PLAIN, SIZE_CAPTION); }
-    public static Font captionBold(){ return font(Font.BOLD,  SIZE_CAPTION); }
+    public static Font display()    { return font(Font.BOLD,  SIZE_DISPLAY); }    // page hero text
+    public static Font heading()    { return font(Font.BOLD,  SIZE_HEADING); }    // page titles, stat values
+    public static Font subheading() { return font(Font.BOLD,  SIZE_SUBHEADING); } // card section titles, drink names
+    public static Font body()       { return font(Font.PLAIN, SIZE_BODY); }       // table cells, combo boxes
+    public static Font bodyBold()   { return font(Font.BOLD,  SIZE_BODY); }       // qty stepper number
+    public static Font label()      { return font(Font.BOLD,  SIZE_LABEL); }      // input labels, button text (MD)
+    public static Font labelPlain() { return font(Font.PLAIN, SIZE_LABEL); }      // nav item text, stat card labels
+    public static Font caption()    { return font(Font.PLAIN, SIZE_CAPTION); }    // login subtitle, chart axis
+    public static Font captionBold(){ return font(Font.BOLD,  SIZE_CAPTION); }    // table headers, badge text
 
     private static Color hex(String h) {
         return new Color(

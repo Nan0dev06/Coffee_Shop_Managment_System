@@ -15,15 +15,17 @@ import java.awt.RenderingHints;
  */
 public class RoundedPanel extends JPanel {
 
+    // defaults match the white card spec used throughout the app
     private Color fill = Theme.SURFACE_CARD;
     private Color borderColor = Theme.BORDER_LIGHT;
     private int radius = Theme.RADIUS_LG;
     private int borderThickness = 1;
 
     public RoundedPanel() {
-        setOpaque(false);
+        setOpaque(false); // we paint our own background in paintComponent
     }
 
+    // fluent setters — allow chaining: new RoundedPanel().setFill(...).setRadius(...)
     public RoundedPanel setFill(Color c) { this.fill = c; return this; }
     public RoundedPanel setBorderColor(Color c) { this.borderColor = c; return this; }
     public RoundedPanel setRadius(int r) { this.radius = r; return this; }
@@ -37,14 +39,14 @@ public class RoundedPanel extends JPanel {
         int h = getHeight();
         if (fill != null) {
             g2.setColor(fill);
-            g2.fillRoundRect(0, 0, w - 1, h - 1, radius, radius);
+            g2.fillRoundRect(0, 0, w - 1, h - 1, radius, radius); // filled rounded rectangle
         }
         if (borderColor != null && borderThickness > 0) {
             g2.setColor(borderColor);
             g2.setStroke(new java.awt.BasicStroke(borderThickness));
-            g2.drawRoundRect(0, 0, w - 1, h - 1, radius, radius);
+            g2.drawRoundRect(0, 0, w - 1, h - 1, radius, radius); // 1px border on top of fill
         }
         g2.dispose();
-        super.paintComponent(g);
+        super.paintComponent(g); // lets child components paint themselves
     }
 }

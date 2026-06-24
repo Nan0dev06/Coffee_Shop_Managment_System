@@ -26,25 +26,32 @@ public class LabeledField extends JPanel {
 
     private final JTextComponent field;
 
+    // label — text shown above the input box
+    // password — true uses JPasswordField (masked chars), false uses plain text
+    // placeholder — greyed hint text shown when the field is empty (ignored for password fields)
     public LabeledField(String label, boolean password, String placeholder) {
         setOpaque(false);
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
+        // label text above the input box
         JLabel labelLbl = new JLabel(label);
         labelLbl.setFont(Theme.label());
         labelLbl.setForeground(Theme.TEXT_PRIMARY);
         labelLbl.setAlignmentX(Component.LEFT_ALIGNMENT);
 
+        // actual text input — password fields mask characters
         field = password ? new JPasswordField() : new PlaceholderTextField(placeholder);
         field.setFont(Theme.body());
         field.setForeground(Theme.TEXT_PRIMARY);
-        field.setOpaque(false);
+        field.setOpaque(false); // FieldBox paints its own background
         field.setBorder(BorderFactory.createEmptyBorder(10, 14, 10, 14));
         field.setCaretColor(Theme.BROWN_600);
 
+        // FieldBox draws the rounded border and changes it on focus
         FieldBox box = new FieldBox(field);
         box.setAlignmentX(Component.LEFT_ALIGNMENT);
 
+        // notify the box when focus changes so it can repaint the border
         field.addFocusListener(new FocusAdapter() {
             @Override public void focusGained(FocusEvent e) { box.setFocused(true); }
             @Override public void focusLost(FocusEvent e)   { box.setFocused(false); }
@@ -52,7 +59,7 @@ public class LabeledField extends JPanel {
 
         add(labelLbl);
         add(javax.swing.Box.createVerticalStrut(Theme.S4));
-        add(box);
+        add(box); // box wraps the field — do not add field directly
     }
 
     public String getText() {

@@ -20,17 +20,19 @@ import java.awt.Rectangle;
  */
 public abstract class ContentPage extends JPanel implements Scrollable {
 
+    // title — page heading shown at the top (e.g. "Dashboard", "Inventory")
     protected ContentPage(String title) {
-        setBackground(Theme.SURFACE_PAGE);
+        setBackground(Theme.SURFACE_PAGE); // cream beige page background
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBorder(BorderFactory.createEmptyBorder(Theme.S32, Theme.S32, Theme.S32, Theme.S32));
 
+        // page title label at the very top of every screen
         JLabel header = new JLabel(title);
         header.setFont(Theme.heading());
         header.setForeground(Theme.TEXT_PRIMARY);
         header.setAlignmentX(Component.LEFT_ALIGNMENT);
         add(header);
-        add(Box.createVerticalStrut(Theme.S24));
+        add(Box.createVerticalStrut(Theme.S24)); // gap between title and first section
     }
 
     /** A white rounded card wrapping the given content with internal padding. */
@@ -46,6 +48,7 @@ public abstract class ContentPage extends JPanel implements Scrollable {
         return card;
     }
 
+    // bold subheading label used as a title inside white cards (e.g. "Recent Orders")
     protected static JLabel sectionTitle(String text) {
         JLabel l = new JLabel(text);
         l.setFont(Theme.subheading());
@@ -58,6 +61,6 @@ public abstract class ContentPage extends JPanel implements Scrollable {
     @Override public Dimension getPreferredScrollableViewportSize() { return getPreferredSize(); }
     @Override public int getScrollableUnitIncrement(Rectangle r, int o, int d) { return 16; }
     @Override public int getScrollableBlockIncrement(Rectangle r, int o, int d) { return r.height - 32; }
-    @Override public boolean getScrollableTracksViewportWidth() { return true; }
-    @Override public boolean getScrollableTracksViewportHeight() { return false; }
+    @Override public boolean getScrollableTracksViewportWidth() { return true; }  // stretch to fill width
+    @Override public boolean getScrollableTracksViewportHeight() { return false; } // allow vertical scroll
 }

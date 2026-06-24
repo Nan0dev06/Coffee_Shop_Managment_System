@@ -31,9 +31,11 @@ import java.awt.Dimension;
  */
 public class Main {
 
+    // outer layout: switches between "login" and "app" cards
     private final CardLayout rootLayout = new CardLayout();
     private final JPanel root = new JPanel(rootLayout);
 
+    // inner layout: switches between the 4 main screens (dashboard/orders/inventory/revenue)
     private final CardLayout contentLayout = new CardLayout();
     private final JPanel content = new JPanel(contentLayout);
 
@@ -43,37 +45,42 @@ public class Main {
         // ── Login card ──
         root.add(new LoginScreen(this::showApp), "login");
 
-        // ── App card: sidebar + content ──
+        // ── App card: sidebar on the left, scrollable content area on the right ──
         sidebar = new SidebarNav(this::onNavSelect);
 
         content.setBackground(Theme.SURFACE_PAGE);
+        // each screen is wrapped in a scroll pane so long pages scroll vertically
         content.add(scroll(new Dashboard()), "dashboard");
         content.add(scroll(new OrderEntryScreen(() -> onNavSelect("dashboard"))), "orders");
         content.add(scroll(new InventoryView()), "inventory");
         content.add(scroll(new RevenueSummaryView()), "revenue");
 
+        // app panel: sidebar pinned to the left, content fills the rest
         JPanel app = new JPanel(new BorderLayout());
         app.add(sidebar, BorderLayout.WEST);
         app.add(content, BorderLayout.CENTER);
 
         root.add(app, "app");
-        rootLayout.show(root, "login");
+        rootLayout.show(root, "login"); // start on the login screen
     }
 
+    // called by LoginScreen when Sign In is clicked
     private void showApp() {
         rootLayout.show(root, "app");
-        onNavSelect("dashboard");
+        onNavSelect("dashboard"); // land on the dashboard after login
     }
 
+    // called by SidebarNav when a nav item is clicked; logout returns to login
     private void onNavSelect(String id) {
         if ("logout".equals(id)) {
             rootLayout.show(root, "login");
             return;
         }
-        sidebar.setActive(id);
-        contentLayout.show(content, id);
+        sidebar.setActive(id);          // highlights the selected nav item
+        contentLayout.show(content, id); // flips the content area to the matching screen
     }
 
+    // wraps a page in a scroll pane; hides the border and horizontal scrollbar
     private JScrollPane scroll(JComponent page) {
         JScrollPane sp = new JScrollPane(page);
         sp.setBorder(null);
@@ -83,18 +90,19 @@ public class Main {
         return sp;
     }
 
+    // builds and sizes the root JFrame
     private JFrame buildFrame() {
         JFrame frame = new JFrame("Café Lumière — Coffee Shop Management");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setContentPane(root);
         frame.setMinimumSize(new Dimension(1024, 680));
         frame.setSize(1200, 780);
-        frame.setLocationRelativeTo(null);
+        frame.setLocationRelativeTo(null); // centres the window on screen
         return frame;
     }
 
     public static void main(String[] args) {
-        Theme.loadFonts();
+        Theme.loadFonts(); // must run before any UI is built
         SwingUtilities.invokeLater(() -> new Main().buildFrame().setVisible(true));
     }
 }

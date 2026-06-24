@@ -24,6 +24,9 @@ public final class Buttons {
     public enum Variant { PRIMARY, SECONDARY, DANGER }
     public enum Size { SM, MD, LG }
 
+    // text — button label
+    // variant — PRIMARY (brown gradient), SECONDARY (flat beige), DANGER (terracotta)
+    // size — SM / MD / LG controls font size and padding
     public static KButton create(String text, Variant variant, Size size) {
         KButton b = new KButton();
         b.setText(text);
@@ -32,8 +35,10 @@ public final class Buttons {
         b.setFocusPainted(false);
         b.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
+        // apply colours for the chosen variant
         switch (variant) {
             case PRIMARY -> {
+                // dark brown gradient; lighter on hover, darker on press
                 b.setkStartColor(Theme.BTN_PRIMARY_START);
                 b.setkEndColor(Theme.BTN_PRIMARY_END);
                 b.setkHoverColor(Theme.BTN_PRIMARY_HOVER);
@@ -42,27 +47,31 @@ public final class Buttons {
                 b.setkHoverForeGround(Theme.BTN_PRIMARY_TEXT);
             }
             case SECONDARY -> {
+                // flat beige (start == end so no gradient)
                 flat(b, Theme.BTN_SECONDARY_BG, Theme.BTN_SECONDARY_HOVER,
                         Theme.BTN_SECONDARY_PRESSED, Theme.BTN_SECONDARY_TEXT);
             }
             case DANGER -> {
+                // flat terracotta red
                 flat(b, Theme.BTN_DANGER_BG, Theme.BTN_DANGER_HOVER,
                         Theme.BTN_DANGER_PRESSED, Theme.BTN_DANGER_TEXT);
             }
         }
 
+        // size controls font and vertical/horizontal padding
         Font font;
         int padV, padH;
         switch (size) {
             case SM -> { font = Theme.captionBold(); padV = 6;  padH = 16; }
             case LG -> { font = Theme.bodyBold();    padV = 12; padH = 32; }
-            default -> { font = Theme.label();        padV = 8;  padH = 24; }
+            default -> { font = Theme.label();        padV = 8;  padH = 24; } // MD
         }
         b.setFont(font);
         b.setBorder(BorderFactory.createEmptyBorder(padV, padH, padV, padH));
         return b;
     }
 
+    // sets start == end so KButton renders a flat solid fill (no gradient) for secondary/danger
     private static void flat(KButton b, Color bg, Color hover, Color pressed, Color fg) {
         b.setkStartColor(bg);
         b.setkEndColor(bg);

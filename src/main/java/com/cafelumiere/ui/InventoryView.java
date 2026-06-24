@@ -37,21 +37,24 @@ import java.util.List;
 public class InventoryView extends ContentPage {
 
     public InventoryView() {
-        super("Inventory");
-        add(tableCard());
+        super("Inventory"); // sets page title and beige background via ContentPage
+        add(tableCard());   // white card wrapping the ingredient table
         add(Box.createVerticalGlue());
     }
 
+    // white card containing the 5-column inventory table
     private JComponent tableCard() {
+        // columns: ingredient name | stock quantity (right-aligned) | unit | status badge | restock button
         Table table = new Table(List.of(
             new Table.Column("Ingredient"),
             new Table.Column("Stock", 90, true),
             new Table.Column("Unit", 70),
             new Table.Column("Status", 130),
-            new Table.Column("", 130)
+            new Table.Column("", 130) // action column (Restock button)
         ));
-        table.addEmptyState("No inventory data");
+        table.addEmptyState("No inventory data"); // shown when no rows have been added
 
+        // wrap table in a rounded white card with padding
         RoundedPanel card = new RoundedPanel();
         card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
         card.setBorder(BorderFactory.createEmptyBorder(Theme.S24, Theme.S24, Theme.S24, Theme.S24));

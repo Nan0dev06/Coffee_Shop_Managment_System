@@ -46,16 +46,17 @@ public class RevenueSummaryView extends ContentPage {
     private static final String EMPTY = "—";
 
     public RevenueSummaryView() {
-        super("Revenue Summary");
+        super("Revenue Summary"); // sets page title and beige background via ContentPage
 
-        add(dateRow());
+        add(dateRow());                          // "Date" label + today's date chip
         add(Box.createVerticalStrut(Theme.S24));
-        add(statRow());
+        add(statRow());                          // 4 KPI stat cards (all "—" for now)
         add(Box.createVerticalStrut(Theme.S24));
-        add(ordersCard());
+        add(ordersCard());                       // white card with today's orders table
         add(Box.createVerticalGlue());
     }
 
+    // single row: "Date" label + a rounded chip showing today's date
     private JComponent dateRow() {
         JPanel row = new JPanel();
         row.setOpaque(false);
@@ -67,6 +68,7 @@ public class RevenueSummaryView extends ContentPage {
         label.setFont(Theme.label());
         label.setForeground(Theme.TEXT_PRIMARY);
 
+        // rounded pill showing today's date — purely visual, not a date picker
         RoundedPanel chip = new RoundedPanel();
         chip.setRadius(Theme.RADIUS_MD).setBorderColor(Theme.BORDER_MEDIUM);
         chip.setLayout(new BoxLayout(chip, BoxLayout.X_AXIS));
@@ -84,6 +86,7 @@ public class RevenueSummaryView extends ContentPage {
         return row;
     }
 
+    // 4 KPI stat cards across the page — all showing "—" until backend is wired
     private JComponent statRow() {
         JPanel row = new JPanel(new java.awt.GridLayout(1, 4, Theme.S16, 0));
         row.setOpaque(false);
@@ -96,14 +99,16 @@ public class RevenueSummaryView extends ContentPage {
         return row;
     }
 
+    // white card with a table listing all orders placed today
     private JComponent ordersCard() {
+        // columns: order id | customer | items ordered | total (right-aligned)
         Table table = new Table(List.of(
             new Table.Column("Order ID", 90),
             new Table.Column("Customer"),
             new Table.Column("Items"),
             new Table.Column("Total", 90, true)
         ));
-        table.addEmptyState("No orders for this date");
+        table.addEmptyState("No orders for this date"); // shown when table has no rows
         table.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         RoundedPanel card = new RoundedPanel();

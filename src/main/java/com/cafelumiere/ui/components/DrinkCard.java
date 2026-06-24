@@ -19,15 +19,17 @@ import com.k33ptoo.components.KButton;
 
 
 /**
- * Product card for the Order Entry screen: circular placeholder (first letter),
- * drink name, price, a quantity stepper and a full-width primary "Add to Cart"
- * button. No real image upload, per the design-system spec.
+ * Product card for the Order Entry screen: circular drink photo, name, price,
+ * a quantity stepper (− / count / +) and a full-width "Add to Cart" button.
+ * Images are loaded from /images/ at runtime; falls back to a plain beige circle.
  */
 public class DrinkCard extends RoundedPanel {
 
     private static final int CARD_WIDTH = 200;
-    private int quantity = 1;
+    private int quantity = 1; // current stepper value; starts at 1
 
+    // name — drink name (used to derive the image filename)
+    // price — formatted price string e.g. "$3.50"
     public DrinkCard(String name, String price) {
         setRadius(Theme.RADIUS_LG);
         setFill(Theme.SURFACE_CARD);
@@ -39,37 +41,43 @@ public class DrinkCard extends RoundedPanel {
         setPreferredSize(fixed);
         setMaximumSize(fixed);
 
+        // iced drinks have no prefix (e.g. "iced_latte.png"), hot drinks use "hot_" prefix
         String prefix = name.startsWith("Iced ") ? "" : "hot_";
         String filename = "/images/" + prefix + name.toLowerCase().replace(" ", "_") + ".png";
         ImageIcon icon;
         try {
              java.io.InputStream stream = getClass().getResourceAsStream(filename);
              icon= new ImageIcon(stream.readAllBytes());
-
         } catch (Exception e) {
-            icon=null;
+            icon = null; // file missing — circle renders empty (beige background only)
         }
+
+        // circular image area — clips the PNG to a 120px circle
         CirclePlaceholder circle = new CirclePlaceholder(icon);
         circle.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+        // drink name — bold subheading, centred
         JLabel nameLbl = new JLabel(name, SwingConstants.CENTER);
         nameLbl.setFont(Theme.subheading());
         nameLbl.setForeground(Theme.TEXT_PRIMARY);
         nameLbl.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+        // price — secondary text, centred
         JLabel priceLbl = new JLabel(price, SwingConstants.CENTER);
         priceLbl.setFont(Theme.labelPlain());
         priceLbl.setForeground(Theme.TEXT_SECONDARY);
         priceLbl.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+        // − / quantity / + stepper row
         JPanel qty = buildQuantityStepper();
         qty.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+        // full-width primary button — cart logic not wired yet
         KButton addBtn = Buttons.create("Add to Cart", Buttons.Variant.PRIMARY, Buttons.Size.MD);
         addBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
         addBtn.setMaximumSize(new Dimension(Integer.MAX_VALUE, 38));
-        // Visual prototype: no cart logic wired.
 
+        // stack all elements top-to-bottom with spacing
         add(circle);
         add(Box.createVerticalStrut(Theme.S8));
         add(nameLbl);
@@ -81,11 +89,13 @@ public class DrinkCard extends RoundedPanel {
         add(addBtn);
     }
 
+    // horizontal row: minus button | quantity label | plus button
     private JPanel buildQuantityStepper() {
         JPanel row = new JPanel();
         row.setOpaque(false);
         row.setLayout(new BoxLayout(row, BoxLayout.X_AXIS));
 
+        // centred quantity display label, fixed 40px wide
         JLabel qtyLbl = new JLabel(String.valueOf(quantity), SwingConstants.CENTER);
         qtyLbl.setFont(Theme.bodyBold());
         qtyLbl.setForeground(Theme.TEXT_PRIMARY);
@@ -96,7 +106,7 @@ public class DrinkCard extends RoundedPanel {
         KButton minus = stepperButton("−");
         KButton plus = stepperButton("+");
         minus.addActionListener(e -> {
-            if (quantity > 1) { quantity--; qtyLbl.setText(String.valueOf(quantity)); }
+            if (quantity > 1) { quantity--; qtyLbl.setText(String.valueOf(quantity)); } // minimum 1
         });
         plus.addActionListener(e -> {
             quantity++; qtyLbl.setText(String.valueOf(quantity));
@@ -108,6 +118,7 @@ public class DrinkCard extends RoundedPanel {
         return row;
     }
 
+    // small secondary square button used for the − and + controls
     private KButton stepperButton(String text) {
         KButton b = Buttons.create(text, Buttons.Variant.SECONDARY, Buttons.Size.SM);
         Dimension d = new Dimension(34, 28);
@@ -116,13 +127,13 @@ public class DrinkCard extends RoundedPanel {
         return b;
     }
 
-    /** 120px circle (beige-100) with a single centred placeholder letter. */
+    /** 120px circle: beige-100 background, PNG image clipped to circle shape. */
     private static class CirclePlaceholder extends JComponent {
-        
-        ImageIcon icon;
+
+        ImageIcon icon; // null if the image file wasn't found
 
         CirclePlaceholder(ImageIcon icon) {
-            this.icon=icon;
+            this.icon = icon;
             Dimension d = new Dimension(120, 120);
             setPreferredSize(d);
             setMaximumSize(d);
@@ -133,16 +144,16 @@ public class DrinkCard extends RoundedPanel {
         protected void paintComponent(Graphics g) {
             Graphics2D g2 = (Graphics2D) g.create();
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            int d = Math.min(getWidth(),getHeight());
-            
-            int x = (getWidth() - d) / 2;
+            int d = Math.min(getWidth(), getHeight());
+            int x = (getWidth() - d) / 2; // centre horizontally
+
             g2.setColor(Theme.BEIGE_100);
-            g2.fillOval(x, 0, d, d);
-            if(icon !=null){
-                g2.setClip(new java.awt.geom.Ellipse2D.Float(x, 0, d, d));
-                g2.drawImage(icon.getImage(), x, 0,d,d, this);
+            g2.fillOval(x, 0, d, d); // beige circle background
+
+            if (icon != null) {
+                g2.setClip(new java.awt.geom.Ellipse2D.Float(x, 0, d, d)); // clip to circle
+                g2.drawImage(icon.getImage(), x, 0, d, d, this);            // draw PNG inside circle
             }
-    
             g2.dispose();
         }
     }

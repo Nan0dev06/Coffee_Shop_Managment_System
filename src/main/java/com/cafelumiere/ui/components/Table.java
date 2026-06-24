@@ -21,7 +21,7 @@ import java.util.List;
  */
 public class Table extends JPanel {
 
-    /** width 0 means flexible (shares remaining horizontal space). */
+    // Column record: label = header text, width = fixed px (0 = flexible), rightAlign = right-justify text
     public record Column(String label, int width, boolean rightAlign) {
         public Column(String label) { this(label, 0, false); }
         public Column(String label, int width) { this(label, width, false); }
@@ -29,13 +29,15 @@ public class Table extends JPanel {
 
     private final List<Column> columns;
 
+    // columns — list defining all column headers and their widths
     public Table(List<Column> columns) {
         this.columns = columns;
         setOpaque(false);
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        addHeader();
+        addHeader(); // always added first as the top row
     }
 
+    // renders the header row with bold secondary-coloured labels and a bottom border
     private void addHeader() {
         JPanel header = newRow();
         for (Column col : columns) {
@@ -45,14 +47,14 @@ public class Table extends JPanel {
             l.setHorizontalAlignment(col.rightAlign() ? JLabel.RIGHT : JLabel.LEFT);
             header.add(wrapCell(l, col));
         }
-        header.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Theme.BORDER_LIGHT));
+        header.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Theme.BORDER_LIGHT)); // divider line under header
         add(header);
     }
 
     /** Adds a data row. Each cell is a String or a Component. */
     public void addRow(Object... cells) {
-        int index = getComponentCount() - 1; // minus header
-        Color bg = index % 2 == 0 ? Theme.SURFACE_CARD : Theme.SURFACE_ALT_ROW;
+        int index = getComponentCount() - 1; // count existing rows (minus header) for stripe colour
+        Color bg = index % 2 == 0 ? Theme.SURFACE_CARD : Theme.SURFACE_ALT_ROW; // alternating row colours
         JPanel row = newRow();
         row.setOpaque(true);
         row.setBackground(bg);
@@ -61,6 +63,7 @@ public class Table extends JPanel {
             Object cell = i < cells.length ? cells[i] : "";
             Component comp;
             if (cell instanceof Component c) {
+                // component cell (e.g. Badge or KButton) — wrap in a holder for alignment
                 JPanel holder = new JPanel();
                 holder.setOpaque(false);
                 holder.setLayout(new BoxLayout(holder, BoxLayout.X_AXIS));
@@ -69,6 +72,7 @@ public class Table extends JPanel {
                 if (!col.rightAlign()) holder.add(Box.createHorizontalGlue());
                 comp = holder;
             } else {
+                // string cell — render as a plain label
                 JLabel l = new JLabel(String.valueOf(cell));
                 l.setFont(Theme.body());
                 l.setForeground(Theme.TEXT_PRIMARY);
@@ -87,12 +91,14 @@ public class Table extends JPanel {
         JLabel l = new JLabel(message);
         l.setFont(Theme.body());
         l.setForeground(Theme.TEXT_SECONDARY);
+        // horizontal glue on both sides centres the message
         row.add(Box.createHorizontalGlue());
         row.add(l);
         row.add(Box.createHorizontalGlue());
         add(row);
     }
 
+    // creates a blank horizontal row panel with a fixed height equal to ROW_MIN_HEIGHT
     private JPanel newRow() {
         JPanel row = new JPanel();
         row.setOpaque(false);
@@ -113,10 +119,12 @@ public class Table extends JPanel {
 
         int h = Theme.ROW_MIN_HEIGHT;
         if (col.width() > 0) {
+            // fixed-width column — all three sizes set to prevent stretching
             cell.setPreferredSize(new Dimension(col.width(), h));
             cell.setMaximumSize(new Dimension(col.width(), h));
             cell.setMinimumSize(new Dimension(col.width(), h));
         } else {
+            // flexible column — grows to fill available horizontal space
             cell.setPreferredSize(new Dimension(160, h));
             cell.setMaximumSize(new Dimension(Integer.MAX_VALUE, h));
             cell.setMinimumSize(new Dimension(80, h));
