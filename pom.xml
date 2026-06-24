@@ -38,6 +38,13 @@
             <artifactId>xchart</artifactId>
             <version>3.8.8</version>
         </dependency>
+
+        <!-- Universal Tween Engine: reusable animation/easing engine (sidebar slide, etc.) -->
+        <dependency>
+            <groupId>com.github.arcnor</groupId>
+            <artifactId>universal-tween-engine</artifactId>
+            <version>6.3.4</version>
+        </dependency>
     </dependencies>
 
     <build>
