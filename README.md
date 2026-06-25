@@ -15,6 +15,28 @@ Café Lumière lets a single owner manage daily café operations: taking orders,
 - **Animated sidebar** — collapsible icon rail (240 px → 72 px) with a smooth slide driven by the Universal Tween Engine; click the hamburger to toggle
 - **Owner login** — single-owner access gate, no multi-user roles
 - **Persistence** — customers and orders are saved to `cafedata.dat` via Java serialization and reloaded on startup
+## How to Run
+
+**Prerequisites:** JDK 17+ and Maven installed.
+
+```bash
+# 1. Clone the repo
+git clone https://github.com/Nan0dev06/Coffee_Shop_Managment_System.git
+cd Coffee_Shop_Managment_System
+
+# 2. Build a fat JAR (includes all dependencies)
+mvn package -q
+
+# 3. Run
+java -jar target/cafelumiere-1.0-SNAPSHOT-jar-with-dependencies.jar
+```
+
+**Login credentials**
+- Username: `admin`
+- Password: `testtest`
+
+Data is saved automatically when you exit (click X → Yes). On the next launch everything is restored.
+
 ## Tech stack
  
 | Layer | Choice |
