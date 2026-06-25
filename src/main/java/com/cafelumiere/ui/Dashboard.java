@@ -1,25 +1,5 @@
 package com.cafelumiere.ui;
 
-import com.cafelumiere.model.Menu;
-import com.cafelumiere.model.MenuItem;
-import com.cafelumiere.system.CoffeeShopSystem;
-import com.cafelumiere.ui.components.ContentPage;
-import com.cafelumiere.ui.components.RoundedPanel;
-import com.cafelumiere.ui.components.StatCard;
-import com.cafelumiere.ui.components.Table;
-import com.cafelumiere.ui.theme.Theme;
-import org.knowm.xchart.CategoryChart;
-import org.knowm.xchart.CategoryChartBuilder;
-import org.knowm.xchart.CategorySeries;
-import org.knowm.xchart.XChartPanel;
-import org.knowm.xchart.style.CategoryStyler;
-
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -29,13 +9,34 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+
+import org.knowm.xchart.CategoryChart;
+import org.knowm.xchart.CategoryChartBuilder;
+import org.knowm.xchart.CategorySeries;
+import org.knowm.xchart.XChartPanel;
+import org.knowm.xchart.style.CategoryStyler;
+
+import com.cafelumiere.model.Menu;
+import com.cafelumiere.model.MenuItem;
 import com.cafelumiere.model.Order;
+import com.cafelumiere.system.CoffeeShopSystem;
+import com.cafelumiere.ui.components.ContentPage;
+import com.cafelumiere.ui.components.RoundedPanel;
+import com.cafelumiere.ui.components.StatCard;
+import com.cafelumiere.ui.components.Table;
+import com.cafelumiere.ui.theme.Theme;
 /**
  * Dashboard: KPI stat row, popular-drinks bar chart and recent orders.
  */
 public class Dashboard extends ContentPage {
 
-    private static final String EMPTY = "—";
+    
     private final CoffeeShopSystem system;
     public Dashboard(CoffeeShopSystem system) {
         super("Dashboard"); // sets page title and beige background via ContentPage
