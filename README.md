@@ -28,7 +28,7 @@ Café Lumière lets a single owner manage daily café operations: taking orders,
  
 ## Architecture
  
-Full editable version on the [Figma board](https://www.figma.com/board/mDg9ctDhKL7xdbJJ17juTX/Welcome-to-FigJam). Class diagram:
+ Class diagram:
  
 ```mermaid
 classDiagram
