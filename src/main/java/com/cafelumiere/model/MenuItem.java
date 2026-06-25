@@ -1,5 +1,7 @@
 package com.cafelumiere.model;
 
+import java.io.Serializable;
+
 /**
  * Abstract menu item (Tier 1 — Data class).
  * Concrete subclasses {@link HotDrink} and {@link ColdDrink} each override
@@ -13,7 +15,7 @@ package com.cafelumiere.model;
  *
  * No other fields or methods should be added here unless the UML is updated.
  */
-public abstract class MenuItem {
+public abstract class MenuItem implements Serializable {
 
     private final String name;
     private final double basePrice;

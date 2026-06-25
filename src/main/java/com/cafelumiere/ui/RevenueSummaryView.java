@@ -32,12 +32,25 @@ public class RevenueSummaryView extends ContentPage {
     public RevenueSummaryView(CoffeeShopSystem system) {
         super("Revenue Summary"); // sets page title and beige background via ContentPage
         this.system = system;
+        build();
+    }
+
+    // builds the page body from the current system data
+    private void build() {
         add(dateRow());                          // "Date" label + today's date chip
         add(Box.createVerticalStrut(Theme.S24));
-        add(statRow());                          // 4 KPI stat cards (all "—" for now)
+        add(statRow());                          // 4 KPI stat cards for today
         add(Box.createVerticalStrut(Theme.S24));
         add(ordersCard());                       // white card with today's orders table
         add(Box.createVerticalGlue());
+    }
+
+    // re-reads system data and rebuilds the page — called when this screen is shown
+    public void refresh() {
+        clearBody();
+        build();
+        revalidate();
+        repaint();
     }
 
     // single row: "Date" label + a rounded chip showing today's date

@@ -83,15 +83,15 @@ public class Inventory implements Serializable {
         private static final Map<String, List<String>> recipes = new HashMap<>();
 
         static {
-            recipes.put("Hot Espresso",    Arrays.asList("Coffee Beans", "Water"));
+            recipes.put("Espresso",        Arrays.asList("Coffee Beans", "Water"));
             recipes.put("Iced Espresso",   Arrays.asList("Coffee Beans", "Water", "Ice Cubes"));
-            recipes.put("Hot Latte",       Arrays.asList("Coffee Beans", "Water", "Milk"));
+            recipes.put("Latte",           Arrays.asList("Coffee Beans", "Water", "Milk"));
             recipes.put("Iced Latte",      Arrays.asList("Coffee Beans", "Water", "Milk", "Ice Cubes"));
-            recipes.put("Hot Americano",   Arrays.asList("Coffee Beans", "Water"));
+            recipes.put("Americano",       Arrays.asList("Coffee Beans", "Water"));
             recipes.put("Iced Americano",  Arrays.asList("Coffee Beans", "Water", "Ice Cubes"));
-            recipes.put("Hot Cappuccino",  Arrays.asList("Coffee Beans", "Water", "Milk", "Cocoa Powder"));
+            recipes.put("Cappuccino",      Arrays.asList("Coffee Beans", "Water", "Milk", "Cocoa Powder"));
             recipes.put("Iced Cappuccino", Arrays.asList("Coffee Beans", "Water", "Milk", "Ice Cubes", "Cocoa Powder"));
-            recipes.put("Hot Java",        Arrays.asList("Coffee Beans", "Water", "Bug Spray Syrup", "String Sugar"));
+            recipes.put("Java",            Arrays.asList("Coffee Beans", "Water", "Bug Spray Syrup", "String Sugar"));
             recipes.put("Iced Java",       Arrays.asList("Coffee Beans", "Water", "Ice Cubes", "Bug Spray Syrup", "String Sugar"));
         }
 

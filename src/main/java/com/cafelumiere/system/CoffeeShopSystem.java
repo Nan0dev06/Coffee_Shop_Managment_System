@@ -68,6 +68,7 @@ public class CoffeeShopSystem {
                 try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("cafedata.dat"))) {
                     out.writeObject(customers);
                     out.writeObject(orders);
+                    out.writeObject(inventory);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -77,7 +78,9 @@ public class CoffeeShopSystem {
                         if (!file.exists()) return; // first run, no file yet
                             try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(file))) {
                                 customers = (List<Customer>) in.readObject();
-                                orders = (List<Order>)    in.readObject();
+                                orders    = (List<Order>)    in.readObject();
+                                inventory = (Inventory)      in.readObject();
+                                Customer.syncTracker(customers); // avoid ID collisions with loaded customers
                             } catch (IOException | ClassNotFoundException e) {
                                     e.printStackTrace();
                             }

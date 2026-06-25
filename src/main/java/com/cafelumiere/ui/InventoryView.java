@@ -24,8 +24,21 @@ public class InventoryView extends ContentPage {
     public InventoryView(CoffeeShopSystem system) {
         super("Inventory"); // sets page title and beige background via ContentPage
         this.system=system;
+        build();
+    }
+
+    // builds the page body from the current inventory state
+    private void build() {
         add(tableCard());   // white card wrapping the ingredient table
         add(Box.createVerticalGlue());
+    }
+
+    // re-reads inventory and rebuilds the page — called on nav and after a restock
+    public void refresh() {
+        clearBody();
+        build();
+        revalidate();
+        repaint();
     }
 
     // white card containing the 5-column inventory table
@@ -48,7 +61,10 @@ public class InventoryView extends ContentPage {
                     ? new Badge("Low Stock", Badge.Variant.WARNING)
                     : new Badge("OK",        Badge.Variant.SUCCESS);
                 KButton restock = Buttons.create("Restock", Buttons.Variant.SECONDARY, Buttons.Size.SM);
-                restock.addActionListener(e -> system.getInventory().restock(ingredient, 50));
+                restock.addActionListener(e -> {
+                    system.getInventory().restock(ingredient, 50);
+                    refresh(); // update the stock number and badge immediately
+                });
                 table.addRow(ingredient, String.valueOf(entry.getValue()), "units", badge, restock);
             }
         }

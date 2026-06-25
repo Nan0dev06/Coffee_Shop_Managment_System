@@ -17,7 +17,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -26,8 +25,6 @@ import java.util.List;
  */
 public class CustomerView extends ContentPage {
 
-    // in-memory list until CoffeeShopSystem is wired in
-    private final List<Customer> customers = new ArrayList<>();
     private final CoffeeShopSystem system;
     private LabeledField nameField;
     private LabeledField phoneField;
@@ -125,7 +122,6 @@ public class CustomerView extends ContentPage {
 
         Customer c = new Customer(0, name, phone, address);
         system.addCustomer(c);
-        customers.add(c);
 
         nameField.clear();
         phoneField.clear();
@@ -133,10 +129,9 @@ public class CustomerView extends ContentPage {
         refresh();
     }
 
-    // removes the given customer from the list and refreshes the table
+    // removes the given customer from the system and refreshes the table
     private void onRemoveCustomer(Customer c) {
         system.removeCustomer(c.getCustomerId());
-        customers.remove(c);
         refresh();
     }
 
@@ -165,10 +160,10 @@ public class CustomerView extends ContentPage {
         ));
         table.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        if (customers.isEmpty()) {
+        if (system.getCustomers().isEmpty()) {
             table.addEmptyState("No customers yet");
         } else {
-            for (Customer c : customers) {
+            for (Customer c : system.getCustomers()) {
                 KButton remove = Buttons.create("Remove", Buttons.Variant.DANGER, Buttons.Size.SM);
                 remove.addActionListener(e -> onRemoveCustomer(c));
                 table.addRow(
@@ -183,7 +178,7 @@ public class CustomerView extends ContentPage {
     }
 
     // replaces the old table with a freshly built one after an add or remove
-    private void refresh() {
+    public void refresh() {
         tableCard.remove(table);
         rebuildTable();
         tableCard.add(table);

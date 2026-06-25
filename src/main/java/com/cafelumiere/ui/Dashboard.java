@@ -26,9 +26,9 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import com.cafelumiere.model.Order;
 /**
  * Dashboard: KPI stat row, popular-drinks bar chart and recent orders.
@@ -40,9 +40,22 @@ public class Dashboard extends ContentPage {
     public Dashboard(CoffeeShopSystem system) {
         super("Dashboard"); // sets page title and beige background via ContentPage
         this.system=system;
+        build();
+    }
+
+    // builds the page body from the current system data
+    private void build() {
         add(statRow());                          // 4 KPI cards across the top
         add(Box.createVerticalStrut(Theme.S24));
         add(section());                          // chart (left) + recent orders (right)
+    }
+
+    // re-reads system data and rebuilds the page — called when this screen is shown
+    public void refresh() {
+        clearBody();
+        build();
+        revalidate();
+        repaint();
     }
 
     // horizontal row of 4 stat cards with real values from the system
@@ -101,18 +114,21 @@ public class Dashboard extends ContentPage {
         return card;
     }
 
-    // builds the XChart bar chart; categories = menu drink names, all bars start at 0
+    // builds the XChart bar chart; one bar per drink, height = times ordered
     private CategoryChart buildChart() {
         CategoryChart chart = new CategoryChartBuilder().width(620).height(280).build();
 
-        // Categories are the fixed menu drinks; sales counts come from the
-        // backend later, so every bar is zero (empty) for now.
+        // categories = the fixed menu drinks; count how many times each was ordered
         List<String> names = Menu.items().stream().map(MenuItem::getName).toList();
-        for (int i = 0; i < names.size(); i++) {
-            List<Integer> y = new ArrayList<>(Collections.nCopies(names.size(), 0));
-            CategorySeries s = chart.addSeries("s" + i, names, y);
-            s.setFillColor(Theme.CHART_COLORS[i % Theme.CHART_COLORS.length]); // cycle through brown palette
+        Map<String, Integer> counts = new HashMap<>();
+        for (Order o : system.getOrders()) {
+            for (MenuItem item : o.getItems()) {
+                counts.merge(item.getName(), 1, Integer::sum);
+            }
         }
+        List<Integer> y = names.stream().map(n -> counts.getOrDefault(n, 0)).toList();
+        CategorySeries s = chart.addSeries("sales", names, y);
+        s.setFillColor(Theme.CHART_COLORS[0]);
 
         // style: match the card background, hide legend/labels, show horizontal grid only
         CategoryStyler st = chart.getStyler();
@@ -135,8 +151,7 @@ public class Dashboard extends ContentPage {
         st.setAxisTickLabelsFont(Theme.caption());
         st.setChartFontColor(Theme.BROWN_900);
         st.setXAxisLabelRotation(40); // angled labels so long drink names don't overlap
-        st.setYAxisMin(0.0);
-        st.setYAxisMax(100.0); // stable axis for the empty state
+        st.setYAxisMin(0.0);          // bars grow from 0; max auto-scales to the data
         return chart;
     }
 

@@ -20,19 +20,31 @@ import java.awt.Rectangle;
  */
 public abstract class ContentPage extends JPanel implements Scrollable {
 
+    private final String title;
+
     // title — page heading shown at the top (e.g. "Dashboard", "Inventory")
     protected ContentPage(String title) {
+        this.title = title;
         setBackground(Theme.SURFACE_PAGE); // cream beige page background
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBorder(BorderFactory.createEmptyBorder(Theme.S32, Theme.S32, Theme.S32, Theme.S32));
+        addHeader();
+    }
 
-        // page title label at the very top of every screen
+    // adds the page title label at the very top of the screen
+    private void addHeader() {
         JLabel header = new JLabel(title);
         header.setFont(Theme.heading());
         header.setForeground(Theme.TEXT_PRIMARY);
         header.setAlignmentX(Component.LEFT_ALIGNMENT);
         add(header);
         add(Box.createVerticalStrut(Theme.S24)); // gap between title and first section
+    }
+
+    // clears all content and re-adds the header; subclasses call this in refresh()
+    protected void clearBody() {
+        removeAll();
+        addHeader();
     }
 
     /** A white rounded card wrapping the given content with internal padding. */

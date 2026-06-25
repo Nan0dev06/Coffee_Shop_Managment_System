@@ -34,6 +34,10 @@ public class Main {
     private SidebarNav sidebar;
     private final CoffeeShopSystem system = new CoffeeShopSystem();
     private final OrderEntryScreen orderEntry;
+    private final Dashboard dashboard;
+    private final InventoryView inventoryView;
+    private final RevenueSummaryView revenueView;
+    private final CustomerView customerView;
 
     private Main() {
         // ── Login card ──
@@ -42,15 +46,19 @@ public class Main {
         // ── App card: sidebar on the left, scrollable content area on the right ──
         sidebar = new SidebarNav(this::onNavSelect);
 
-        orderEntry = new OrderEntryScreen(system, () -> onNavSelect("dashboard"));
+        orderEntry    = new OrderEntryScreen(system, () -> onNavSelect("dashboard"));
+        dashboard     = new Dashboard(system);
+        inventoryView = new InventoryView(system);
+        revenueView   = new RevenueSummaryView(system);
+        customerView  = new CustomerView(system);
 
         content.setBackground(Theme.SURFACE_PAGE);
         // each screen is wrapped in a scroll pane so long pages scroll vertically
-        content.add(scroll(new Dashboard(system)), "dashboard");
+        content.add(scroll(dashboard), "dashboard");
         content.add(scroll(orderEntry), "orders");
-        content.add(scroll(new InventoryView(system)), "inventory");
-        content.add(scroll(new RevenueSummaryView(system)), "revenue");
-        content.add(scroll(new CustomerView(system)), "customers");
+        content.add(scroll(inventoryView), "inventory");
+        content.add(scroll(revenueView), "revenue");
+        content.add(scroll(customerView), "customers");
 
         // app panel: sidebar pinned to the left, content fills the rest
         JPanel app = new JPanel(new BorderLayout());
@@ -73,8 +81,13 @@ public class Main {
             rootLayout.show(root, "login");
             return;
         }
-        if ("orders".equals(id)) {
-            orderEntry.refreshCustomers(); // sync latest customers into the combo
+        // re-read the latest system data into the screen we're about to show
+        switch (id) {
+            case "dashboard" -> dashboard.refresh();
+            case "orders"    -> orderEntry.refreshCustomers();
+            case "inventory" -> inventoryView.refresh();
+            case "revenue"   -> revenueView.refresh();
+            case "customers" -> customerView.refresh();
         }
         sidebar.setActive(id);           // highlights the selected nav item
         contentLayout.show(content, id); // flips the content area to the matching screen
