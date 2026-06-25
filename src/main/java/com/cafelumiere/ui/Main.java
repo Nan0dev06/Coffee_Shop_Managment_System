@@ -7,12 +7,15 @@ import com.cafelumiere.ui.CustomerView;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Dimension;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 /**
  * Application shell. A root CardLayout swaps between the Login screen and the
@@ -24,12 +27,13 @@ public class Main {
     private final CardLayout rootLayout = new CardLayout();
     private final JPanel root = new JPanel(rootLayout);
 
-    // inner layout: switches between the 4 main screens (dashboard/orders/inventory/revenue)
+    // inner layout: switches between the 5 main screens
     private final CardLayout contentLayout = new CardLayout();
     private final JPanel content = new JPanel(contentLayout);
 
     private SidebarNav sidebar;
     private final CoffeeShopSystem system = new CoffeeShopSystem();
+    private final OrderEntryScreen orderEntry;
 
     private Main() {
         // ── Login card ──
@@ -38,10 +42,12 @@ public class Main {
         // ── App card: sidebar on the left, scrollable content area on the right ──
         sidebar = new SidebarNav(this::onNavSelect);
 
+        orderEntry = new OrderEntryScreen(system, () -> onNavSelect("dashboard"));
+
         content.setBackground(Theme.SURFACE_PAGE);
         // each screen is wrapped in a scroll pane so long pages scroll vertically
         content.add(scroll(new Dashboard(system)), "dashboard");
-        content.add(scroll(new OrderEntryScreen(system,() -> onNavSelect("dashboard"))), "orders");
+        content.add(scroll(orderEntry), "orders");
         content.add(scroll(new InventoryView(system)), "inventory");
         content.add(scroll(new RevenueSummaryView(system)), "revenue");
         content.add(scroll(new CustomerView(system)), "customers");
@@ -67,7 +73,10 @@ public class Main {
             rootLayout.show(root, "login");
             return;
         }
-        sidebar.setActive(id);          // highlights the selected nav item
+        if ("orders".equals(id)) {
+            orderEntry.refreshCustomers(); // sync latest customers into the combo
+        }
+        sidebar.setActive(id);           // highlights the selected nav item
         contentLayout.show(content, id); // flips the content area to the matching screen
     }
 
@@ -84,7 +93,25 @@ public class Main {
     // builds and sizes the root JFrame
     private JFrame buildFrame() {
         JFrame frame = new JFrame("Café Lumière — Coffee Shop Management");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                int choice = JOptionPane.showConfirmDialog(
+                    frame,
+                    "Save all data before exiting?",
+                    "Exit Café Lumière",
+                    JOptionPane.YES_NO_CANCEL_OPTION
+                );
+                if (choice == JOptionPane.YES_OPTION) {
+                    system.saveData();
+                    System.exit(0);
+                } else if (choice == JOptionPane.NO_OPTION) {
+                    System.exit(0);
+                }
+                // CANCEL — do nothing, keep the app open
+            }
+        });
         frame.setContentPane(root);
         frame.setMinimumSize(new Dimension(1024, 680));
         frame.setSize(1200, 780);

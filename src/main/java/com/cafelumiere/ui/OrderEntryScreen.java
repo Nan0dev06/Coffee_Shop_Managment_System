@@ -85,6 +85,10 @@ public class OrderEntryScreen extends ContentPage {
         return bar;
     }
 
+    public void refreshCustomers() {
+        combo.setModel(new DefaultComboBoxModel<>(system.getCustomers().toArray(new Customer[0])));
+    }
+
     // label + combo box wrapped vertically
     private JPanel customerSelector() {
         JPanel wrap = new JPanel();

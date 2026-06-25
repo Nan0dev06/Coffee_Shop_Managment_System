@@ -109,6 +109,20 @@ public class CustomerView extends ContentPage {
             return;
         }
 
+        // phone must match format: digits-digits e.g. 555-0123
+        if (!phone.matches("\\d{3}-\\d{4}")) {
+            JOptionPane.showMessageDialog(this, "Phone must be in the format: 555-0123",
+                    "Invalid phone", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // address must start with a number followed by a street name e.g. 12 Main St
+        if (!address.matches("\\d+\\s+.+")) {
+            JOptionPane.showMessageDialog(this, "Address must be in the format: 12 Main St",
+                    "Invalid address", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
         Customer c = new Customer(0, name, phone, address);
         system.addCustomer(c);
         customers.add(c);
