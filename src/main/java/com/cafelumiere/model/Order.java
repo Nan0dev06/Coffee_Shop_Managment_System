@@ -1,60 +1,52 @@
 package com.cafelumiere.model;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
-/**
- * A single customer order (Tier 2 — Logic class).
- *
- * TODO: Add all fields from the UML:
- *   - orderId: int  {unique, auto-increment}  — assigned by CoffeeShopSystem
- *   - customer: Customer
- *   - items: List<MenuItem>
- *   - dateTime: LocalDateTime
- *
- * TODO: Implement the constructor:
- *   public Order(int orderId, Customer customer, List<MenuItem> items) {
- *       this.orderId = orderId;
- *       this.customer = customer;
- *       this.items = items;
- *       this.dateTime = LocalDateTime.now();
- *   }
- *
- * TODO: Implement the methods from the UML:
- *
- *   + addItem(item: MenuItem): void
- *       items.add(item);
- *
- *   + calculateTotal(): double
- *       return items.stream().mapToDouble(MenuItem::calculatePrice).sum();
- *
- *   + getOrderId(): int
- *       return orderId;
- *
- *   + getCustomer(): Customer
- *       return customer;
- *
- * TODO: Wire into CoffeeShopSystem.placeOrder() — it creates the Order,
- *       sets the orderId, and adds it to the orders list.
- *
- * TODO: Once done, update OrderEntryScreen's Place Order popup to use:
- *       Order order = system.placeOrder(selectedCustomer, selectedItems);
- *       "Order placed for " + order.getCustomer().getName()
- *       + " — Total: $" + String.format("%.2f", order.calculateTotal())
- */
-public class Order {
+public class Order implements Serializable {
 
-    // TODO: private int orderId;
-    // TODO: private Customer customer;
-    // TODO: private List<MenuItem> items;
-    // TODO: private LocalDateTime dateTime;
+    private static int nextId = 1; // shared counter across all Order objects
+    private final int orderId;
+    private final Customer customer;
+    private final List<MenuItem> items;
+    private final LocalDateTime dateTime;
 
-    // TODO: public Order(int orderId, Customer customer, List<MenuItem> items) { ... }
+    // Called once per order. Auto-assigns ID and timestamps the order.
+    public Order(Customer customer) {
+        this.orderId  = nextId++;
+        this.customer = customer;
+        this.items    = new ArrayList<>();
+        this.dateTime = LocalDateTime.now();
+    }
 
-    // TODO: public void addItem(MenuItem item) { ... }
-    // TODO: public double calculateTotal() { ... }
-    // TODO: public int getOrderId() { ... }
-    // TODO: public Customer getCustomer() { ... }
-    // TODO: public List<MenuItem> getItems() { ... }
-    // TODO: public LocalDateTime getDateTime() { ... }
+    public int           getOrderId()  { return orderId; }
+    public Customer      getCustomer() { return customer; }
+    public LocalDateTime getDateTime() { return dateTime; }
+
+    // Adds a drink to this order.
+    public void addItem(MenuItem item) {
+        if (item == null) throw new IllegalArgumentException("Item cannot be null");
+        items.add(item);
+    }
+
+    public double calculateTotal() {
+        double total = 0;
+        for (MenuItem item : items) {
+            total += item.calculatePrice();
+        }
+        return total;
+    }
+
+    // Returns a defensive copy — outside code cannot modify the internal list
+    public List<MenuItem> getItems() {
+        return new ArrayList<>(items);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Order #%d | %s | %d items | $%.2f",
+            orderId, customer.getName(), items.size(), calculateTotal());
+    }
 }
