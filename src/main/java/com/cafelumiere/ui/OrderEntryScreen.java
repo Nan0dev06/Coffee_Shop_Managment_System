@@ -6,6 +6,7 @@ import com.cafelumiere.model.MenuItem;
 import com.cafelumiere.ui.components.Buttons;
 import com.cafelumiere.ui.components.ContentPage;
 import com.cafelumiere.ui.components.DrinkCard;
+import com.cafelumiere.ui.components.RoundedPanel;
 import com.cafelumiere.ui.theme.Theme;
 import com.k33ptoo.components.KButton;
 import com.cafelumiere.system.CoffeeShopSystem;
@@ -18,12 +19,15 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JSeparator;
 import javax.swing.UIManager;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Order entry: pick a customer from the combo and browse the 10 drink cards.
@@ -36,18 +40,21 @@ public class OrderEntryScreen extends ContentPage {
     private final CoffeeShopSystem system;
     private final List<MenuItem> cart = new ArrayList<>();
     private final List<DrinkCard> drinkCards = new ArrayList<>();
-    public OrderEntryScreen(CoffeeShopSystem system,Runnable onPlaceOrder) {
+    private final RoundedPanel cartPanel = new RoundedPanel(); // live cart summary below the grid
+
+    public OrderEntryScreen(CoffeeShopSystem system, Runnable onPlaceOrder) {
         super("Order Entry"); // sets page title and beige background via ContentPage
         this.system = system;
         add(topBar(onPlaceOrder)); // customer selector + Place Order button
         add(Box.createVerticalStrut(Theme.S24));
         add(drinkGrid());          // 5-column grid of drink cards
+        add(Box.createVerticalStrut(Theme.S24));
+        add(buildCartPanel());     // cart summary — hidden until something is added
         add(Box.createVerticalGlue());
     }
 
     /** Customer selector on the left, Place Order button on the right. */
     private JComponent topBar(Runnable onPlaceOrder) {
-        // horizontal bar pinned to full width, fixed 64px tall
         JPanel bar = new JPanel();
         bar.setOpaque(false);
         bar.setLayout(new BoxLayout(bar, BoxLayout.X_AXIS));
@@ -57,7 +64,6 @@ public class OrderEntryScreen extends ContentPage {
         JPanel selector = customerSelector();
         selector.setAlignmentY(Component.BOTTOM_ALIGNMENT);
 
-        // primary brown button — shows confirmation popup, then navigates to dashboard
         KButton placeOrder = Buttons.create("Place Order", Buttons.Variant.PRIMARY, Buttons.Size.LG);
         placeOrder.setAlignmentY(Component.BOTTOM_ALIGNMENT);
         placeOrder.addActionListener(e -> {
@@ -87,9 +93,9 @@ public class OrderEntryScreen extends ContentPage {
             system.placeOrder(selected, cart);
             double total = cart.stream().mapToDouble(MenuItem::calculatePrice).sum();
             cart.clear();
-            drinkCards.forEach(DrinkCard::reset); // reset all quantity steppers to 1
+            drinkCards.forEach(DrinkCard::reset);
+            refreshCart();
 
-            // apply design-system colors to the native JOptionPane dialog
             UIManager.put("OptionPane.background", Theme.SURFACE_CARD);
             UIManager.put("Panel.background", Theme.SURFACE_CARD);
             UIManager.put("OptionPane.messageForeground", Theme.TEXT_PRIMARY);
@@ -104,11 +110,11 @@ public class OrderEntryScreen extends ContentPage {
                 "Order Confirmed",
                 JOptionPane.INFORMATION_MESSAGE
             );
-            onPlaceOrder.run(); // navigate back to dashboard after confirming
+            onPlaceOrder.run();
         });
 
         bar.add(selector);
-        bar.add(Box.createHorizontalGlue()); // pushes Place Order to the right edge
+        bar.add(Box.createHorizontalGlue());
         bar.add(placeOrder);
         return bar;
     }
@@ -129,7 +135,6 @@ public class OrderEntryScreen extends ContentPage {
         label.setForeground(Theme.TEXT_PRIMARY);
         label.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        
         combo = new JComboBox<>(new DefaultComboBoxModel<>(system.getCustomers().toArray(new Customer[0])));
         combo.setFont(Theme.body());
         combo.setForeground(Theme.TEXT_PRIMARY);
@@ -144,7 +149,7 @@ public class OrderEntryScreen extends ContentPage {
         return wrap;
     }
 
-    // 5-column grid — one DrinkCard per menu item (name + calculated price)
+    // 5-column grid — one DrinkCard per menu item
     private JComponent drinkGrid() {
         JPanel grid = new JPanel(new GridLayout(0, COLUMNS, Theme.S16, Theme.S16));
         grid.setOpaque(false);
@@ -153,12 +158,138 @@ public class OrderEntryScreen extends ContentPage {
             DrinkCard card = new DrinkCard(item.getName(), String.format("$%.2f", item.calculatePrice()),
                 qty -> {
                     for (int i = 0; i < qty; i++) cart.add(item);
+                    refreshCart();
                 });
             drinkCards.add(card);
             grid.add(card);
         }
-        // Cap height so BoxLayout doesn't stretch the cards vertically.
         grid.setMaximumSize(new Dimension(Integer.MAX_VALUE, grid.getPreferredSize().height));
         return grid;
+    }
+
+    // builds the initial (empty, hidden) cart panel and returns it
+    private JComponent buildCartPanel() {
+        cartPanel.setLayout(new BoxLayout(cartPanel, BoxLayout.Y_AXIS));
+        cartPanel.setBorder(BorderFactory.createEmptyBorder(Theme.S24, Theme.S24, Theme.S24, Theme.S24));
+        cartPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        cartPanel.setVisible(false); // hidden until something is added
+        return cartPanel;
+    }
+
+    // rebuilds the cart panel contents from the current cart list
+    private void refreshCart() {
+        cartPanel.removeAll();
+
+        if (cart.isEmpty()) {
+            cartPanel.setVisible(false);
+            cartPanel.revalidate();
+            cartPanel.repaint();
+            return;
+        }
+
+        // group by drink name, preserving insertion order
+        Map<String, Integer> counts = new LinkedHashMap<>();
+        Map<String, MenuItem> byName = new LinkedHashMap<>();
+        for (MenuItem item : cart) {
+            counts.merge(item.getName(), 1, Integer::sum);
+            byName.put(item.getName(), item);
+        }
+
+        JLabel title = new JLabel("Cart");
+        title.setFont(Theme.subheading());
+        title.setForeground(Theme.TEXT_PRIMARY);
+        title.setAlignmentX(Component.LEFT_ALIGNMENT);
+        cartPanel.add(title);
+        cartPanel.add(Box.createVerticalStrut(Theme.S12));
+
+        JSeparator sep = new JSeparator();
+        sep.setForeground(Theme.BORDER_LIGHT);
+        sep.setMaximumSize(new Dimension(Integer.MAX_VALUE, 1));
+        sep.setAlignmentX(Component.LEFT_ALIGNMENT);
+        cartPanel.add(sep);
+        cartPanel.add(Box.createVerticalStrut(Theme.S12));
+
+        for (Map.Entry<String, Integer> entry : counts.entrySet()) {
+            String name = entry.getKey();
+            int qty      = entry.getValue();
+            MenuItem item = byName.get(name);
+            double subtotal = item.calculatePrice() * qty;
+
+            JPanel row = new JPanel();
+            row.setOpaque(false);
+            row.setLayout(new BoxLayout(row, BoxLayout.X_AXIS));
+            row.setAlignmentX(Component.LEFT_ALIGNMENT);
+            row.setMaximumSize(new Dimension(Integer.MAX_VALUE, 36));
+
+            JLabel nameLbl = new JLabel(name);
+            nameLbl.setFont(Theme.body());
+            nameLbl.setForeground(Theme.TEXT_PRIMARY);
+
+            JLabel qtyLbl = new JLabel("×" + qty);
+            qtyLbl.setFont(Theme.bodyBold());
+            qtyLbl.setForeground(Theme.TEXT_SECONDARY);
+
+            JLabel priceLbl = new JLabel(String.format("$%.2f", subtotal));
+            priceLbl.setFont(Theme.body());
+            priceLbl.setForeground(Theme.TEXT_PRIMARY);
+
+            // removes one copy of this drink from the cart
+            KButton minus = Buttons.create("−", Buttons.Variant.DANGER, Buttons.Size.SM);
+            minus.setPreferredSize(new Dimension(34, 28));
+            minus.setMaximumSize(new Dimension(34, 28));
+            minus.addActionListener(ev -> {
+                // find and remove the last occurrence of this item
+                for (int i = cart.size() - 1; i >= 0; i--) {
+                    if (cart.get(i).getName().equals(name)) {
+                        cart.remove(i);
+                        break;
+                    }
+                }
+                refreshCart();
+            });
+
+            row.add(nameLbl);
+            row.add(Box.createHorizontalStrut(Theme.S12));
+            row.add(qtyLbl);
+            row.add(Box.createHorizontalGlue());
+            row.add(priceLbl);
+            row.add(Box.createHorizontalStrut(Theme.S12));
+            row.add(minus);
+
+            cartPanel.add(row);
+            cartPanel.add(Box.createVerticalStrut(Theme.S8));
+        }
+
+        // total row at the bottom
+        cartPanel.add(Box.createVerticalStrut(Theme.S4));
+        JSeparator sepBottom = new JSeparator();
+        sepBottom.setForeground(Theme.BORDER_LIGHT);
+        sepBottom.setMaximumSize(new Dimension(Integer.MAX_VALUE, 1));
+        sepBottom.setAlignmentX(Component.LEFT_ALIGNMENT);
+        cartPanel.add(sepBottom);
+        cartPanel.add(Box.createVerticalStrut(Theme.S12));
+
+        double total = cart.stream().mapToDouble(MenuItem::calculatePrice).sum();
+        JPanel totalRow = new JPanel();
+        totalRow.setOpaque(false);
+        totalRow.setLayout(new BoxLayout(totalRow, BoxLayout.X_AXIS));
+        totalRow.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        JLabel totalLbl = new JLabel("Total");
+        totalLbl.setFont(Theme.label());
+        totalLbl.setForeground(Theme.TEXT_PRIMARY);
+
+        JLabel totalAmt = new JLabel(String.format("$%.2f", total));
+        totalAmt.setFont(Theme.subheading());
+        totalAmt.setForeground(Theme.TEXT_PRIMARY);
+
+        totalRow.add(totalLbl);
+        totalRow.add(Box.createHorizontalGlue());
+        totalRow.add(totalAmt);
+        cartPanel.add(totalRow);
+
+        cartPanel.setVisible(true);
+        cartPanel.revalidate();
+        cartPanel.repaint();
     }
 }
