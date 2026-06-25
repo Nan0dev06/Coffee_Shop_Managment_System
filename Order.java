@@ -8,23 +8,16 @@ import java.io.Serializable;
  * ORDER CLASS
  * ============================================================
  *
- * Order class — represents one customer order in the café.
+ * This class represents a single order made by a customer.
  *
- * What it does:
+ * - addItem()        : add a drink to the order
+ * - calculateTotal() : get the total price
+ * - getItems()       : see what drinks are in the order
+ * - getOrderId()     : get the order number
+ * - getCustomer()    : get who made the order
+ * - getDateTime()    : get when the order was made
  *
- * - addItem()          : adds a drink to the order
- *
- * - calculateTotal()   : calculates the total price of all drinks
- *
- * - getItems()         : returns a copy of the drinks list
- *
- * - getOrderId()       : returns the unique order number
- *
- * - getCustomer()      : returns who placed the order
- *
- * - getDateTime()      : returns when the order was placed
- *
- * Saved to file using Serializable.
+ * Data is saved to a file using Serializable.
  */
 public class Order implements Serializable {
 
