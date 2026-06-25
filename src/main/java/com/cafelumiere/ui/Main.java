@@ -16,20 +16,7 @@ import java.awt.Dimension;
 
 /**
  * Application shell. A root CardLayout swaps between the Login screen and the
- * main app (sidebar + a CardLayout content area for the four screens). Buttons
- * navigate only — no backend logic is wired in this visual prototype.
- *
- * TODO (backend wiring — do this last, once CoffeeShopSystem is implemented):
- *   1. Create one shared system instance at the top of this class:
- *         private final CoffeeShopSystem system = new CoffeeShopSystem();
- *   2. Pass it into each screen that needs data:
- *         new Dashboard(system)
- *         new OrderEntryScreen(system, () -> onNavSelect("dashboard"))
- *         new InventoryView(system)
- *         new RevenueSummaryView(system)
- *   3. In showApp(), after rootLayout.show(), tell the Dashboard to refresh its
- *      KPI cards and chart with real data from system.
- *   4. In LoginScreen, add credential validation against a user store if required.
+ * main app (sidebar + a CardLayout content area for the five screens).
  */
 public class Main {
 
@@ -53,11 +40,11 @@ public class Main {
 
         content.setBackground(Theme.SURFACE_PAGE);
         // each screen is wrapped in a scroll pane so long pages scroll vertically
-        content.add(scroll(new Dashboard()), "dashboard");
-        content.add(scroll(new OrderEntryScreen(() -> onNavSelect("dashboard"))), "orders");
-        content.add(scroll(new InventoryView()), "inventory");
-        content.add(scroll(new RevenueSummaryView()), "revenue");
-        content.add(scroll(new CustomerView()), "customers");
+        content.add(scroll(new Dashboard(system)), "dashboard");
+        content.add(scroll(new OrderEntryScreen(system,() -> onNavSelect("dashboard"))), "orders");
+        content.add(scroll(new InventoryView(system)), "inventory");
+        content.add(scroll(new RevenueSummaryView(system)), "revenue");
+        content.add(scroll(new CustomerView(system)), "customers");
 
         // app panel: sidebar pinned to the left, content fills the rest
         JPanel app = new JPanel(new BorderLayout());

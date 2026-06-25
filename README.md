@@ -14,7 +14,7 @@ Café Lumière lets a single owner manage daily café operations: taking orders,
 - **Revenue summary** — daily total revenue, order count, and best-selling drink (by order frequency)
 - **Animated sidebar** — collapsible icon rail (240 px → 72 px) with a smooth slide driven by the Universal Tween Engine; click the hamburger to toggle
 - **Owner login** — single-owner access gate, no multi-user roles
-- **Persistence** — all data (customers, orders, menu, inventory) is saved to file on close and loaded on startup
+- **Persistence** — customers and orders are saved to `cafedata.dat` via Java serialization and reloaded on startup
 ## Tech stack
  
 | Layer | Choice |
@@ -151,7 +151,8 @@ Coffee_Shop_Management_System/
     │       ├── LoginScreen.java     # Login screen
     │       ├── Dashboard.java       # Dashboard (stat cards + chart + recent orders)
     │       ├── OrderEntryScreen.java# Order entry (customer selector + drink grid)
-    │       ├── InventoryView.java   # Inventory table
+    │       ├── InventoryView.java   # Inventory table with Low Stock badges and Restock buttons
+    │       ├── CustomerView.java    # Customer management (add/remove form + table)
     │       ├── RevenueSummaryView.java # Revenue stat cards + today's orders
     │       │
     │       ├── components/          # Reusable UI building blocks
@@ -164,7 +165,7 @@ Coffee_Shop_Management_System/
     │       │   ├── Buttons.java     # KButton factory (Primary/Secondary/Danger)
     │       │   ├── SidebarNav.java  # Dark gradient sidebar with nav items
     │       │   ├── LabeledField.java# Text input with label and focus border
-    │       │   └── ContentPage.java # Abstract base for all 4 main screens
+    │       │   └── ContentPage.java # Abstract base for all 5 main screens
     │       │
     │       └── theme/
     │           └── Theme.java       # Design token constants (moved here from components)
@@ -172,7 +173,7 @@ Coffee_Shop_Management_System/
     └── resources/
         ├── fonts/                   # Nunito TTF files (400, 600, 700 weights)
         ├── images/                  # Drink photos (hot_*.png / iced_*.png)
-        ├── icons/                   # White PNG nav icons (dashboard, orders, inventory, revenue, menu)
+        ├── icons/                   # White PNG nav icons (dashboard, orders, inventory, revenue, customers)
         └── data/                    # Save files written by saveData() / loadData()
 ```
 

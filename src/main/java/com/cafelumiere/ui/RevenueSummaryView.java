@@ -1,5 +1,8 @@
 package com.cafelumiere.ui;
 
+import com.cafelumiere.model.Order;
+import com.cafelumiere.reports.RevenueSummary;
+import com.cafelumiere.system.CoffeeShopSystem;
 import com.cafelumiere.ui.components.ContentPage;
 import com.cafelumiere.ui.components.RoundedPanel;
 import com.cafelumiere.ui.components.StatCard;
@@ -17,37 +20,18 @@ import java.awt.Dimension;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
- * Revenue summary: date, KPI stat cards and the day's orders. Metrics are empty
- * placeholders pending the backend; only today's date is shown.
- *
- * TODO (backend wiring):
- *   1. Change constructor to accept CoffeeShopSystem:
- *         public RevenueSummaryView(CoffeeShopSystem system)
- *   2. In statRow(), replace the 4 "—" StatCards with real values:
- *         RevenueSummary summary = system.getRevenueSummary(LocalDate.now());
- *         new StatCard("Revenue Today",   String.format("$%.2f", summary.getTotalRevenue()))
- *         new StatCard("Orders Today",    String.valueOf(summary.getOrderCount()))
- *         new StatCard("Avg Order Value", String.format("$%.2f", summary.getAvgOrderValue()))
- *         new StatCard("Best Seller",     summary.getBestSellingItem())
- *   3. In ordersCard(), replace addEmptyState() with real rows:
- *         for (Order o : system.getOrdersForDate(LocalDate.now())) {
- *             String items = o.getLines().stream()
- *                 .map(l -> l.item().getName() + " x" + l.quantity())
- *                 .collect(Collectors.joining(", "));
- *             table.addRow("#" + o.getOrderId(), o.getCustomer().getName(),
- *                          items, String.format("$%.2f", o.calculateTotal()));
- *         }
- *   4. Add a refresh() method so it reloads the summary for today when navigated to.
+ * Revenue summary: today's date, KPI stat cards, and today's orders table.
  */
 public class RevenueSummaryView extends ContentPage {
 
-    private static final String EMPTY = "—";
 
-    public RevenueSummaryView() {
+    private final CoffeeShopSystem system;
+    public RevenueSummaryView(CoffeeShopSystem system) {
         super("Revenue Summary"); // sets page title and beige background via ContentPage
-
+        this.system = system;
         add(dateRow());                          // "Date" label + today's date chip
         add(Box.createVerticalStrut(Theme.S24));
         add(statRow());                          // 4 KPI stat cards (all "—" for now)
@@ -86,29 +70,48 @@ public class RevenueSummaryView extends ContentPage {
         return row;
     }
 
-    // 4 KPI stat cards across the page — all showing "—" until backend is wired
+    // 4 KPI stat cards for today built from RevenueSummary
     private JComponent statRow() {
+        List<Order> todayOrders = system.getOrders().stream()
+            .filter(o -> o.getDateTime().toLocalDate().equals(LocalDate.now()))
+            .collect(Collectors.toList());
+        RevenueSummary summary = new RevenueSummary(LocalDate.now(), todayOrders);
+
         JPanel row = new JPanel(new java.awt.GridLayout(1, 4, Theme.S16, 0));
         row.setOpaque(false);
         row.setAlignmentX(Component.LEFT_ALIGNMENT);
         row.setMaximumSize(new Dimension(Integer.MAX_VALUE, 100));
-        row.add(new StatCard("Revenue Today", EMPTY));
-        row.add(new StatCard("Orders Today", EMPTY));
-        row.add(new StatCard("Avg Order Value", EMPTY));
-        row.add(new StatCard("Best Seller", EMPTY));
+        row.add(new StatCard("Revenue Today",   String.format("$%.2f", summary.getTotalRevenue())));
+        row.add(new StatCard("Orders Today",    String.valueOf(summary.getOrderCount())));
+        row.add(new StatCard("Avg Order Value", String.format("$%.2f", summary.getAvgOrderValue())));
+        row.add(new StatCard("Best Seller",     summary.getBestSellingItem()));
         return row;
     }
 
     // white card with a table listing all orders placed today
     private JComponent ordersCard() {
-        // columns: order id | customer | items ordered | total (right-aligned)
         Table table = new Table(List.of(
             new Table.Column("Order ID", 90),
             new Table.Column("Customer"),
             new Table.Column("Items"),
             new Table.Column("Total", 90, true)
         ));
-        table.addEmptyState("No orders for this date"); // shown when table has no rows
+
+        List<Order> todayOrders = system.getOrders().stream()
+            .filter(o -> o.getDateTime().toLocalDate().equals(LocalDate.now()))
+            .collect(Collectors.toList());
+
+        if (todayOrders.isEmpty()) {
+            table.addEmptyState("No orders for this date");
+        } else {
+            for (Order o : todayOrders) {
+                String items = o.getItems().stream()
+                    .map(i -> i.getName())
+                    .collect(Collectors.joining(", "));
+                table.addRow("#" + o.getOrderId(), o.getCustomer().getName(),
+                    items, String.format("$%.2f", o.calculateTotal()));
+            }
+        }
         table.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         RoundedPanel card = new RoundedPanel();

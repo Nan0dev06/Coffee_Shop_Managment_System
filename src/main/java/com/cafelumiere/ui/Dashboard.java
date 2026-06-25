@@ -2,6 +2,7 @@ package com.cafelumiere.ui;
 
 import com.cafelumiere.model.Menu;
 import com.cafelumiere.model.MenuItem;
+import com.cafelumiere.system.CoffeeShopSystem;
 import com.cafelumiere.ui.components.ContentPage;
 import com.cafelumiere.ui.components.RoundedPanel;
 import com.cafelumiere.ui.components.StatCard;
@@ -24,56 +25,42 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
+import com.cafelumiere.model.Order;
 /**
- * Dashboard: KPI stat row, popular-drinks bar chart and recent orders. All
- * metrics are empty placeholders — the backend will supply the real values.
- * Only the fixed drink names (chart categories) come from the menu.
- *
- * TODO (backend wiring):
- *   1. Change constructor to accept CoffeeShopSystem:
- *         public Dashboard(CoffeeShopSystem system)
- *   2. Replace the 4 StatCard "—" values with real KPIs:
- *         new StatCard("Total Revenue",   String.format("$%.2f", system.getTotalRevenue()))
- *         new StatCard("Orders",          String.valueOf(system.getTotalOrderCount()))
- *         new StatCard("Customers",       String.valueOf(system.getTotalCustomerCount()))
- *         new StatCard("Avg Order Value", String.format("$%.2f", system.getAvgOrderValue()))
- *   3. In buildChart(), set real sales data per drink:
- *         Map<String, Integer> sales = system.getSalesByDrink();
- *         // for each series at index i: y.set(i, sales.getOrDefault(names.get(i), 0))
- *   4. In ordersCard(), populate the recent orders table:
- *         for (Order o : system.getRecentOrders(5)) {
- *             table.addRow("#" + o.getOrderId(), o.getCustomer().getName(),
- *                          String.format("$%.2f", o.calculateTotal()),
- *                          o.getTimestamp().toLocalTime().toString());
- *         }
- *   5. Add a refresh() method so Main can call dashboard.refresh() after each new order.
+ * Dashboard: KPI stat row, popular-drinks bar chart and recent orders.
  */
 public class Dashboard extends ContentPage {
 
     private static final String EMPTY = "—";
-
-    public Dashboard() {
+    private final CoffeeShopSystem system;
+    public Dashboard(CoffeeShopSystem system) {
         super("Dashboard"); // sets page title and beige background via ContentPage
-
+        this.system=system;
         add(statRow());                          // 4 KPI cards across the top
         add(Box.createVerticalStrut(Theme.S24));
         add(section());                          // chart (left) + recent orders (right)
     }
 
-    // horizontal row of 4 stat cards — all showing "—" until backend supplies real values
+    // horizontal row of 4 stat cards with real values from the system
     private JComponent statRow() {
+        List<Order> orders = system.getOrders();
+        double totalRevenue = orders.stream().mapToDouble(Order::calculateTotal).sum();
+        int orderCount      = orders.size();
+        int customerCount   = system.getCustomers().size();
+        double avgValue     = orderCount > 0 ? totalRevenue / orderCount : 0;
+
         JPanel row = new JPanel(new GridLayout(1, 4, Theme.S16, 0));
         row.setOpaque(false);
         row.setAlignmentX(Component.LEFT_ALIGNMENT);
         row.setMaximumSize(new Dimension(Integer.MAX_VALUE, 100));
-        row.add(new StatCard("Total Revenue", EMPTY));
-        row.add(new StatCard("Orders", EMPTY));
-        row.add(new StatCard("Customers", EMPTY));
-        row.add(new StatCard("Avg Order Value", EMPTY));
+        row.add(new StatCard("Total Revenue",   String.format("$%.2f", totalRevenue)));
+        row.add(new StatCard("Orders",          String.valueOf(orderCount)));
+        row.add(new StatCard("Customers",       String.valueOf(customerCount)));
+        row.add(new StatCard("Avg Order Value", String.format("$%.2f", avgValue)));
         return row;
     }
 
@@ -159,14 +146,24 @@ public class Dashboard extends ContentPage {
         card.add(sectionTitle("Recent Orders"));
         card.add(Box.createVerticalStrut(Theme.S12));
 
-        // columns: order id | customer name | total (right-aligned) | time
         Table table = new Table(List.of(
             new Table.Column("ID", 70),
             new Table.Column("Customer"),
             new Table.Column("Total", 70, true),
             new Table.Column("Time", 80)
         ));
-        table.addEmptyState("No recent orders"); // shown when the table has no rows
+
+        List<Order> recent = system.sortOrdersByDate(false);
+        if (recent.isEmpty()) {
+            table.addEmptyState("No recent orders");
+        } else {
+            recent.stream().limit(5).forEach(o -> table.addRow(
+                "#" + o.getOrderId(),
+                o.getCustomer().getName(),
+                String.format("$%.2f", o.calculateTotal()),
+                o.getDateTime().toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm"))
+            ));
+        }
         table.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         card.add(table);

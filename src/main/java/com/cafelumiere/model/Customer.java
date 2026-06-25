@@ -2,11 +2,6 @@ package com.cafelumiere.model;
 
 /**
  * A café customer (Tier 1 — Data class).
- *
- * 
- *
- * TODO: Once Customer is complete, wire it into CoffeeShopSystem.addCustomer()
- *       and populate the combo box in OrderEntryScreen with system.getCustomers().
  */
 public class Customer {
     private static int idTracker = 0;

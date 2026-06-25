@@ -1,6 +1,7 @@
 package com.cafelumiere.ui;
 
 import com.cafelumiere.model.Customer;
+import com.cafelumiere.system.CoffeeShopSystem;
 import com.cafelumiere.ui.components.Buttons;
 import com.cafelumiere.ui.components.ContentPage;
 import com.cafelumiere.ui.components.LabeledField;
@@ -8,7 +9,6 @@ import com.cafelumiere.ui.components.RoundedPanel;
 import com.cafelumiere.ui.components.Table;
 import com.cafelumiere.ui.theme.Theme;
 import com.k33ptoo.components.KButton;
-
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -23,28 +23,21 @@ import java.util.List;
 /**
  * Customer management screen: a form to add a new customer and a table
  * listing all current customers with a Remove button per row.
- *
- * TODO (backend wiring):
- *   1. Change constructor to accept CoffeeShopSystem:
- *         public CustomerView(CoffeeShopSystem system)
- *   2. Replace the local `customers` list with system.getCustomers().
- *   3. In onAddCustomer(), call system.addCustomer(c) instead of customers.add(c).
- *   4. In onRemoveCustomer(), call system.removeCustomer(c.getCustomerId()).
  */
 public class CustomerView extends ContentPage {
 
     // in-memory list until CoffeeShopSystem is wired in
     private final List<Customer> customers = new ArrayList<>();
-
+    private final CoffeeShopSystem system;
     private LabeledField nameField;
     private LabeledField phoneField;
     private LabeledField addressField;
     private Table table;
     private RoundedPanel tableCard;
 
-    public CustomerView() {
+    public CustomerView(CoffeeShopSystem system) {
         super("Customers");
-
+        this.system = system;
         add(formCard());                         // add-customer form at the top
         add(Box.createVerticalStrut(Theme.S24));
         add(tableCard());                        // customer list below
@@ -116,9 +109,9 @@ public class CustomerView extends ContentPage {
             return;
         }
 
-        // 0 is ignored — Customer auto-assigns the id via its static idTracker
-        // TODO: replace with system.addCustomer(c) once CoffeeShopSystem is wired in
-        customers.add(new Customer(0, name, phone, address));
+        Customer c = new Customer(0, name, phone, address);
+        system.addCustomer(c);
+        customers.add(c);
 
         nameField.clear();
         phoneField.clear();
@@ -128,7 +121,7 @@ public class CustomerView extends ContentPage {
 
     // removes the given customer from the list and refreshes the table
     private void onRemoveCustomer(Customer c) {
-        // TODO: replace with system.removeCustomer(c.getCustomerId()) once wired in
+        system.removeCustomer(c.getCustomerId());
         customers.remove(c);
         refresh();
     }
