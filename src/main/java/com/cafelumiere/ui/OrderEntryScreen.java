@@ -73,6 +73,17 @@ public class OrderEntryScreen extends ContentPage {
                 return;
             }
 
+            // check every item in the cart has enough stock before committing the order
+            for (MenuItem item : cart) {
+                if (!system.getInventory().checkAvailability(item)) {
+                    JOptionPane.showMessageDialog(this,
+                        "Cannot place order — ingredients for \"" + item.getName() + "\" are out of stock.\n"
+                        + "Please restock from the Inventory screen first.",
+                        "Out of Stock", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+            }
+
             system.placeOrder(selected, cart);
             double total = cart.stream().mapToDouble(MenuItem::calculatePrice).sum();
             cart.clear();
