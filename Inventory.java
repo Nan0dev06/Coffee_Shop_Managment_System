@@ -9,21 +9,18 @@ import java.util.*;
  * ============================================================
  * INVENTORY CLASS
  * ============================================================
- * 
- * This class manages all ingredient stock for the coffee shop.
- * It tracks quantities, checks availability, and alerts on low stock.
- * 
- * Key Responsibilities:
- * - Track ingredient quantities
- * - Verify ingredients available for orders
- * - Update stock after orders
- * - Alert when ingredients are low
- * - Allow restocking by owner
- * 
- * Implements Serializable so inventory can be saved to file
- * 
-
+ *
+ * Inventory class — tracks ingredient stock for the café.
+ *
+ * What it does:
+ * - checkAvailability() : checks if a drink can be made before an order
+ * - decrementStock()    : reduces stock 
+ * - isLowStock()        : warns when an ingredient is running low
+ * - restock()           : lets the owner add more stock
+ *
+ * Saved to file using Serializable.
  */
+ 
 
 public class Inventory implements Serializable{
     
