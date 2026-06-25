@@ -12,12 +12,12 @@ public final class Menu {
 
     public static List<MenuItem> items() {
         return List.of(
-            new HotDrink("Americano",   4.50),
-            new ColdDrink("Iced Americano",  4.50),
+            new HotDrink("Americano",   4.00),
+            new ColdDrink("Iced Americano",  4.00),
             new HotDrink("Latte",       5.00),
             new ColdDrink("Iced Latte",      5.00),
-            new HotDrink("Cappuccino",  4.75),
-            new ColdDrink("Iced Cappuccino", 4.75),
+            new HotDrink("Cappuccino",  4.30),
+            new ColdDrink("Iced Cappuccino", 4.30),
             new HotDrink("Espresso",    3.50),
             new ColdDrink("Iced Espresso",   3.50),
             new HotDrink("Java",        4.25),

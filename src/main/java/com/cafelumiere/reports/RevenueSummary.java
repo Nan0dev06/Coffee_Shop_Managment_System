@@ -63,7 +63,7 @@ public class RevenueSummary {
     
     public RevenueSummary(LocalDate date, List<Order> orders){
             this.date = date;
-            this.orderCount = orderCount;
+            this.orderCount = orders.size();
  }
     // TODO: public String calculateBestSeller(List<Order> orders) { ... }
     

@@ -75,13 +75,13 @@ import java.util.List;
  */
 public class CoffeeShopSystem {
 
-    // TODO: private List<Customer> customers;
-    // TODO: private List<Order> orders;
-    // TODO: private List<MenuItem> menu;
-    // TODO: private Inventory inventory;
+    private List<Customer> customers;
+    private List<Order> orders;
+    private List<MenuItem> menu;
+    private Inventory inventory;
 
     // TODO: public CoffeeShopSystem() { loadData(); }
-
+    
     // TODO: public boolean login(String password) { ... }
     // TODO: public Order placeOrder(Customer customer, List<MenuItem> items) { ... }
     // TODO: public void addCustomer(Customer c) { ... }
