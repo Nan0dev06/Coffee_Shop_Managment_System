@@ -35,6 +35,7 @@ public class OrderEntryScreen extends ContentPage {
     private JComboBox<Customer> combo; // field so Place Order can read the selection
     private final CoffeeShopSystem system;
     private final List<MenuItem> cart = new ArrayList<>();
+    private final List<DrinkCard> drinkCards = new ArrayList<>();
     public OrderEntryScreen(CoffeeShopSystem system,Runnable onPlaceOrder) {
         super("Order Entry"); // sets page title and beige background via ContentPage
         this.system = system;
@@ -75,6 +76,7 @@ public class OrderEntryScreen extends ContentPage {
             system.placeOrder(selected, cart);
             double total = cart.stream().mapToDouble(MenuItem::calculatePrice).sum();
             cart.clear();
+            drinkCards.forEach(DrinkCard::reset); // reset all quantity steppers to 1
 
             // apply design-system colors to the native JOptionPane dialog
             UIManager.put("OptionPane.background", Theme.SURFACE_CARD);
@@ -137,10 +139,12 @@ public class OrderEntryScreen extends ContentPage {
         grid.setOpaque(false);
         grid.setAlignmentX(Component.LEFT_ALIGNMENT);
         for (MenuItem item : Menu.items()) {
-            grid.add(new DrinkCard(item.getName(), String.format("$%.2f", item.calculatePrice()),
+            DrinkCard card = new DrinkCard(item.getName(), String.format("$%.2f", item.calculatePrice()),
                 qty -> {
                     for (int i = 0; i < qty; i++) cart.add(item);
-                }));
+                });
+            drinkCards.add(card);
+            grid.add(card);
         }
         // Cap height so BoxLayout doesn't stretch the cards vertically.
         grid.setMaximumSize(new Dimension(Integer.MAX_VALUE, grid.getPreferredSize().height));

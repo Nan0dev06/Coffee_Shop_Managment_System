@@ -28,6 +28,7 @@ public class DrinkCard extends RoundedPanel {
 
     private static final int CARD_WIDTH = 200;
     private int quantity = 1; // current stepper value; starts at 1
+    private JLabel qtyLbl;   // kept as a field so reset() can update the display
 
     // name — drink name (used to derive the image filename)
     // price — formatted price string e.g. "$3.50"
@@ -99,7 +100,7 @@ public class DrinkCard extends RoundedPanel {
         row.setLayout(new BoxLayout(row, BoxLayout.X_AXIS));
 
         // centred quantity display label, fixed 40px wide
-        JLabel qtyLbl = new JLabel(String.valueOf(quantity), SwingConstants.CENTER);
+        qtyLbl = new JLabel(String.valueOf(quantity), SwingConstants.CENTER);
         qtyLbl.setFont(Theme.bodyBold());
         qtyLbl.setForeground(Theme.TEXT_PRIMARY);
         qtyLbl.setPreferredSize(new Dimension(40, 28));
@@ -119,6 +120,12 @@ public class DrinkCard extends RoundedPanel {
         row.add(qtyLbl);
         row.add(plus);
         return row;
+    }
+
+    // resets the stepper back to 1 — called after an order is placed
+    public void reset() {
+        quantity = 1;
+        qtyLbl.setText("1");
     }
 
     // small secondary square button used for the − and + controls

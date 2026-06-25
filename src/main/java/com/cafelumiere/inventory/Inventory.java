@@ -17,6 +17,8 @@ import java.util.Map;
  */
 public class Inventory implements Serializable {
 
+    private static final int MAX_STOCK = 50; // an ingredient can never exceed this
+
     private Map<String, Integer> ingredientStock;
     private int lowStockThreshold;
 
@@ -63,10 +65,11 @@ public class Inventory implements Serializable {
         return ingredientStock.getOrDefault(ingredient, 0) < lowStockThreshold;
     }
 
-    // Adds stock to an ingredient — called from the Restock button in InventoryView
+    // Adds stock to an ingredient, never going above MAX_STOCK — called from the Restock button
     public void restock(String ingredient, int amount) {
         if (amount <= 0) throw new IllegalArgumentException("Amount must be positive");
-        ingredientStock.merge(ingredient, amount, Integer::sum);
+        int current = ingredientStock.getOrDefault(ingredient, 0);
+        ingredientStock.put(ingredient, Math.min(current + amount, MAX_STOCK)); // cap at the max
     }
 
     public int getStock(String ingredient) {
