@@ -37,13 +37,14 @@ classDiagram
     class CoffeeShopSystem {
         -List~Customer~ customers
         -List~Order~ orders
-        -List~MenuItem~ menu
         -Inventory inventory
         +login(password) boolean
         +placeOrder(customer, items) Order
         +addCustomer(c) void
         +removeCustomer(id) void
         +sortOrdersByDate(asc) List~Order~
+        +getCustomers() List~Customer~
+        +getOrders() List~Order~
         +saveData() void
         +loadData() void
     }
@@ -55,17 +56,21 @@ classDiagram
         -LocalDateTime dateTime
         +addItem(item) void
         +calculateTotal() double
+        +getItems() List~MenuItem~
         +getOrderId() int
         +getCustomer() Customer
+        +getDateTime() LocalDateTime
     }
  
     class Inventory {
         -Map~String, Integer~ ingredientStock
         -int lowStockThreshold
+        -int MAX_STOCK
         +checkAvailability(item) boolean
         +decrementStock(item) void
         +isLowStock(ingredient) boolean
         +restock(ingredient, amount) void
+        +getAllStock() Map~String,Integer~
     }
  
     class RevenueSummary {
@@ -115,8 +120,6 @@ classDiagram
     CoffeeShopSystem *-- Order
     CoffeeShopSystem *-- Inventory
     CoffeeShopSystem *-- Customer
-    CoffeeShopSystem *-- MenuItem
-    CoffeeShopSystem *-- RevenueSummary
 ```
 
 ## Project Structure
@@ -156,10 +159,9 @@ Coffee_Shop_Management_System/
     │       ├── RevenueSummaryView.java # Revenue stat cards + today's orders
     │       │
     │       ├── components/          # Reusable UI building blocks
-    │       │   ├── Theme.java       # All design tokens (colors, fonts, spacing)
     │       │   ├── RoundedPanel.java# White card with rounded corners
     │       │   ├── StatCard.java    # KPI card with accent strip
-    │       │   ├── DrinkCard.java   # Product card (image, price, qty, add to cart)
+    │       │   ├── DrinkCard.java   # Product card (image, price, qty stepper, add to cart)
     │       │   ├── Badge.java       # Pill label (Warning / Success)
     │       │   ├── Table.java       # Alternating-row data table
     │       │   ├── Buttons.java     # KButton factory (Primary/Secondary/Danger)
@@ -168,7 +170,7 @@ Coffee_Shop_Management_System/
     │       │   └── ContentPage.java # Abstract base for all 5 main screens
     │       │
     │       └── theme/
-    │           └── Theme.java       # Design token constants (moved here from components)
+    │           └── Theme.java       # All design tokens (colors, fonts, spacing, radii)
     │
     └── resources/
         ├── fonts/                   # Nunito TTF files (400, 600, 700 weights)
