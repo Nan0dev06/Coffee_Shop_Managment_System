@@ -79,16 +79,27 @@ public class CoffeeShopSystem {
     private List<Order> orders;
     private List<MenuItem> menu;
     private Inventory inventory;
+    private int nextOrderId = 1;
+    
 
     // TODO: public CoffeeShopSystem() { loadData(); }
-    
-    // TODO: public boolean login(String password) { ... }
+    public CoffeeShopSystem(){
+        loadData();
+    }
+        //admin is the password that is true
+        public boolean login(String password) { 
+            boolean result = false;
+            if (password.equals("testtest")) result = true;
+            return result;
+        }
     // TODO: public Order placeOrder(Customer customer, List<MenuItem> items) { ... }
     // TODO: public void addCustomer(Customer c) { ... }
     // TODO: public void removeCustomer(int id) { ... }
     // TODO: public List<Order> sortOrdersByDate(boolean asc) { ... }
     // TODO: public void saveData() { ... }
-    // TODO: public void loadData() { ... }
+            public void loadData() { 
+
+             }
 
     // TODO: public List<Customer> getCustomers() { return customers; }
     // TODO: public Inventory getInventory() { return inventory; }

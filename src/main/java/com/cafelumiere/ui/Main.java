@@ -1,5 +1,6 @@
 package com.cafelumiere.ui;
 
+import com.cafelumiere.system.CoffeeShopSystem;
 import com.cafelumiere.ui.components.SidebarNav;
 import com.cafelumiere.ui.theme.Theme;
 import com.cafelumiere.ui.CustomerView;
@@ -41,10 +42,11 @@ public class Main {
     private final JPanel content = new JPanel(contentLayout);
 
     private SidebarNav sidebar;
+    private final CoffeeShopSystem system = new CoffeeShopSystem();
 
     private Main() {
         // ── Login card ──
-        root.add(new LoginScreen(this::showApp), "login");
+        root.add(new LoginScreen(this::showApp, system), "login");
 
         // ── App card: sidebar on the left, scrollable content area on the right ──
         sidebar = new SidebarNav(this::onNavSelect);

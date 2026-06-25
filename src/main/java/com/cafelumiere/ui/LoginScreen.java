@@ -1,5 +1,6 @@
 package com.cafelumiere.ui;
 
+import com.cafelumiere.system.CoffeeShopSystem;
 import com.cafelumiere.ui.components.Buttons;
 import com.cafelumiere.ui.components.LabeledField;
 import com.cafelumiere.ui.components.RoundedPanel;
@@ -24,7 +25,7 @@ import java.awt.GridBagLayout;
 public class LoginScreen extends KGradientPanel {
 
     // onLogin — called when Sign In is clicked; navigates to the main app
-    public LoginScreen(Runnable onLogin) {
+    public LoginScreen(Runnable onLogin,CoffeeShopSystem system) {
         // dark brown gradient fills the entire screen as the backdrop
         setkStartColor(Theme.BROWN_800);
         setkEndColor(Theme.BROWN_700);
@@ -63,11 +64,25 @@ public class LoginScreen extends KGradientPanel {
         username.setMaximumSize(new Dimension(Integer.MAX_VALUE, 56));
         password.setMaximumSize(new Dimension(Integer.MAX_VALUE, 56));
 
-        // primary brown button — no credential check, just enters the app
+        // red error label — hidden until a failed login attempt
+        JLabel errorLabel = new JLabel("Incorrect username or password.");
+        errorLabel.setFont(Theme.caption());
+        errorLabel.setForeground(Theme.WARNING_TEXT);
+        errorLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        errorLabel.setVisible(false);
+
+        // primary brown button — checks credentials before entering the app
         KButton signIn = Buttons.create("Sign In", Buttons.Variant.PRIMARY, Buttons.Size.LG);
         signIn.setAlignmentX(Component.CENTER_ALIGNMENT);
         signIn.setMaximumSize(new Dimension(Integer.MAX_VALUE, 46));
-        signIn.addActionListener(e -> onLogin.run());
+        signIn.addActionListener(e -> {
+            if (system.login(password.getText()) && username.getText().equals("admin")) {
+                errorLabel.setVisible(false);
+                onLogin.run();
+            } else {
+                errorLabel.setVisible(true);
+            }
+        });
 
         // stack children top-to-bottom with spacing between them
         card.add(brand);
@@ -77,7 +92,9 @@ public class LoginScreen extends KGradientPanel {
         card.add(username);
         card.add(Box.createVerticalStrut(Theme.S16));
         card.add(password);
-        card.add(Box.createVerticalStrut(Theme.S24));
+        card.add(Box.createVerticalStrut(Theme.S16));
+        card.add(errorLabel);
+        card.add(Box.createVerticalStrut(Theme.S8));
         card.add(signIn);
 
         add(card); // GridBagLayout centres the card in the brown backdrop
