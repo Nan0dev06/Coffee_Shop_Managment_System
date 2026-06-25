@@ -20,15 +20,8 @@ public class ColdDrink extends MenuItem {
 
     @Override
 public double calculatePrice() {
-    switch (getIceLevel().toLowerCase()) {
-        case "regular":
-            return getBasePrice() + 0.30;
-        case "light":
-            return getBasePrice() + 0.15; 
-        case "extra":
-            return getBasePrice() + 0.45; 
-        default:
-            return getBasePrice(); 
+    // ice level is just a preference, any size will costs $0.50 extra
+        return getBasePrice() +0.50;
     }
 }
-}
+
