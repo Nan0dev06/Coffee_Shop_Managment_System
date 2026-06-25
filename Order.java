@@ -65,7 +65,7 @@ public class Order implements Serializable {
 }
 
 
-    // her returns copy 
+    // here returns copy 
    public List<MenuItem> getItems() {
     return new ArrayList<>(items);
 }
