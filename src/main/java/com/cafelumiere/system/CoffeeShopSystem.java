@@ -1,6 +1,5 @@
 package com.cafelumiere.system;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -32,12 +31,10 @@ public class CoffeeShopSystem {
         inventory = new Inventory();
         loadData();
     }
-        //admin is the password that is true
-        public boolean login(String password) { 
-            boolean result = false;
-            if (password.equals("testtest")) result = true;
-            return result;
-        }
+        //password and username login
+        public boolean login(String username, String password) {
+            return username.equals("admin") && password.equals("testtest");
+}
 
         public Order placeOrder(Customer customer, List<MenuItem> items) {
             Order order = new Order(customer);
@@ -74,20 +71,24 @@ public class CoffeeShopSystem {
                     }
                 }
                 public void loadData() {
-                    File file = new File("cafedata.dat");
-                        if (!file.exists()) return; // first run, no file yet
-                            try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(file))) {
-                                customers = (List<Customer>) in.readObject();
-                                orders    = (List<Order>)    in.readObject();
-                                inventory = (Inventory)      in.readObject();
-                                Customer.syncTracker(customers); // avoid ID collisions with loaded customers
+                    try (ObjectInputStream in = new ObjectInputStream(new FileInputStream("cafedata.dat"))) {
+                            customers = (List) in.readObject();
+                            Customer.syncTracker(customers);  // call this right after loading
+                            orders    = (List)    in.readObject();
+                             inventory = (Inventory)      in.readObject();
                             } catch (IOException | ClassNotFoundException e) {
                                     e.printStackTrace();
-                            }
+                                }
                         }
                
 
-            public List<Customer> getCustomers() { return customers; }
-            public List<Order>    getOrders()    { return orders; }
-            public Inventory      getInventory() { return inventory; }
+            public List<Customer> getCustomers() { 
+                return customers;
+             }
+            public List<Order> getOrders()    { 
+                return orders; 
+            }
+            public Inventory getInventory() { 
+                return inventory; 
+            }
 }

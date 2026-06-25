@@ -1,5 +1,15 @@
 package com.cafelumiere.ui;
 
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridBagLayout;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JLabel;
+
 import com.cafelumiere.system.CoffeeShopSystem;
 import com.cafelumiere.ui.components.Buttons;
 import com.cafelumiere.ui.components.LabeledField;
@@ -7,15 +17,6 @@ import com.cafelumiere.ui.components.RoundedPanel;
 import com.cafelumiere.ui.theme.Theme;
 import com.k33ptoo.components.KButton;
 import com.k33ptoo.components.KGradientPanel;
-
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JLabel;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GridBagLayout;
 
 /**
  * Login screen: full brown-gradient backdrop with a centred white card holding
@@ -76,7 +77,7 @@ public class LoginScreen extends KGradientPanel {
         signIn.setAlignmentX(Component.CENTER_ALIGNMENT);
         signIn.setMaximumSize(new Dimension(Integer.MAX_VALUE, 46));
         signIn.addActionListener(e -> {
-            if (system.login(password.getText()) && username.getText().equals("admin")) {
+            if (system.login(username.getText(),password.getText()))  {
                 errorLabel.setVisible(false);
                 onLogin.run();
             } else {

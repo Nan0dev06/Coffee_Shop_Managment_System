@@ -7,7 +7,7 @@ import java.util.List;
  * A café customer (Tier 1 — Data class).
  */
 public class Customer implements Serializable {
-    private static int idTracker = 0;
+    private static int idTracker ;
     private final int customerId;
     private final String name;
     
@@ -15,13 +15,21 @@ public class Customer implements Serializable {
 
    
     private String address;
-    public Customer(int customerId, String name,String phone,String address) {
-        idTracker++;
-        this.customerId = idTracker; 
-        this.name = name;
-        this.phone=phone;
-        this.address=address;
-        
+    // Constructor 1 — for the UI, creating a brand-new customer
+    public Customer(String name, String phone, String address) {
+    idTracker++;
+    this.customerId = idTracker;
+    this.name = name;
+    this.phone = phone;
+    this.address = address;
+}
+
+// Constructor 2 — for deserialization, restoring a customer that already has an ID
+    public Customer(int customerId, String name, String phone, String address) {
+    this.customerId = customerId;  // use it as-is, don't touch idTracker
+    this.name = name;
+    this.phone = phone;
+    this.address = address;
     }
 
     // After loading customers from disk, advance the ID counter past the highest

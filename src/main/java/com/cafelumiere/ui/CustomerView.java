@@ -1,5 +1,16 @@
 package com.cafelumiere.ui;
 
+import java.awt.Component;
+import java.awt.Dimension;
+import java.util.List;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JComponent;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+
 import com.cafelumiere.model.Customer;
 import com.cafelumiere.system.CoffeeShopSystem;
 import com.cafelumiere.ui.components.Buttons;
@@ -9,15 +20,6 @@ import com.cafelumiere.ui.components.RoundedPanel;
 import com.cafelumiere.ui.components.Table;
 import com.cafelumiere.ui.theme.Theme;
 import com.k33ptoo.components.KButton;
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JComponent;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.util.List;
 
 /**
  * Customer management screen: a form to add a new customer and a table
@@ -120,7 +122,7 @@ public class CustomerView extends ContentPage {
             return;
         }
 
-        Customer c = new Customer(0, name, phone, address);
+        Customer c = new Customer( name, phone, address);
         system.addCustomer(c);
 
         nameField.clear();
