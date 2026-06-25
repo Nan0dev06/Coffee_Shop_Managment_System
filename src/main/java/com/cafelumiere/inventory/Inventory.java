@@ -1,12 +1,13 @@
 package com.cafelumiere.inventory;
 
-import com.cafelumiere.model.MenuItem;
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.cafelumiere.model.MenuItem;
 
 /**
  * Manages ingredient stock levels (Tier 2 — Logic class).
@@ -69,7 +70,7 @@ public class Inventory implements Serializable {
     public void restock(String ingredient, int amount) {
         if (amount <= 0) throw new IllegalArgumentException("Amount must be positive");
         int current = ingredientStock.getOrDefault(ingredient, 0);
-        ingredientStock.put(ingredient, Math.min(current + amount, MAX_STOCK)); // cap at the max
+        ingredientStock.put(ingredient, Math.min(current + amount, MAX_STOCK));
     }
 
     public int getStock(String ingredient) {
