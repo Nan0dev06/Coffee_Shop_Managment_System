@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.util.function.Consumer;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -30,7 +31,8 @@ public class DrinkCard extends RoundedPanel {
 
     // name — drink name (used to derive the image filename)
     // price — formatted price string e.g. "$3.50"
-    public DrinkCard(String name, String price) {
+    // onAdd — called with the current quantity when "Add to Cart" is clicked
+    public DrinkCard(String name, String price, Consumer<Integer> onAdd) {
         setRadius(Theme.RADIUS_LG);
         setFill(Theme.SURFACE_CARD);
         setBorderColor(Theme.BORDER_LIGHT);
@@ -72,10 +74,11 @@ public class DrinkCard extends RoundedPanel {
         JPanel qty = buildQuantityStepper();
         qty.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // full-width primary button — cart logic not wired yet
+        // full-width primary button — notifies OrderEntryScreen with the selected quantity
         KButton addBtn = Buttons.create("Add to Cart", Buttons.Variant.PRIMARY, Buttons.Size.MD);
         addBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
         addBtn.setMaximumSize(new Dimension(Integer.MAX_VALUE, 38));
+        addBtn.addActionListener(e -> onAdd.accept(quantity));
 
         // stack all elements top-to-bottom with spacing
         add(circle);

@@ -22,6 +22,8 @@ import javax.swing.UIManager;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Order entry: pick a customer from the combo and browse the 10 drink cards.
@@ -32,6 +34,7 @@ public class OrderEntryScreen extends ContentPage {
 
     private JComboBox<Customer> combo; // field so Place Order can read the selection
     private final CoffeeShopSystem system;
+    private final List<MenuItem> cart = new ArrayList<>();
     public OrderEntryScreen(CoffeeShopSystem system,Runnable onPlaceOrder) {
         super("Order Entry"); // sets page title and beige background via ContentPage
         this.system = system;
@@ -58,8 +61,20 @@ public class OrderEntryScreen extends ContentPage {
         placeOrder.setAlignmentY(Component.BOTTOM_ALIGNMENT);
         placeOrder.addActionListener(e -> {
             Customer selected = (Customer) combo.getSelectedItem();
-            String customerName = selected != null ? selected.getName() : "Guest";
-            String total = "$0.00";
+            if (selected == null) {
+                JOptionPane.showMessageDialog(this, "Please select a customer first.",
+                        "No customer selected", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            if (cart.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please add at least one drink to the cart.",
+                        "Empty cart", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            system.placeOrder(selected, cart);
+            double total = cart.stream().mapToDouble(MenuItem::calculatePrice).sum();
+            cart.clear();
 
             // apply design-system colors to the native JOptionPane dialog
             UIManager.put("OptionPane.background", Theme.SURFACE_CARD);
@@ -72,7 +87,7 @@ public class OrderEntryScreen extends ContentPage {
 
             JOptionPane.showMessageDialog(
                 this,
-                "Order placed for " + customerName + " — Total: " + total,
+                "Order placed for " + selected.getName() + " — Total: " + String.format("$%.2f", total),
                 "Order Confirmed",
                 JOptionPane.INFORMATION_MESSAGE
             );
@@ -122,7 +137,10 @@ public class OrderEntryScreen extends ContentPage {
         grid.setOpaque(false);
         grid.setAlignmentX(Component.LEFT_ALIGNMENT);
         for (MenuItem item : Menu.items()) {
-            grid.add(new DrinkCard(item.getName(), String.format("$%.2f", item.calculatePrice())));
+            grid.add(new DrinkCard(item.getName(), String.format("$%.2f", item.calculatePrice()),
+                qty -> {
+                    for (int i = 0; i < qty; i++) cart.add(item);
+                }));
         }
         // Cap height so BoxLayout doesn't stretch the cards vertically.
         grid.setMaximumSize(new Dimension(Integer.MAX_VALUE, grid.getPreferredSize().height));
