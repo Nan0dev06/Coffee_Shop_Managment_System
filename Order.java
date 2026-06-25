@@ -6,9 +6,9 @@ import java.io.Serializable;
 
 public class Order implements Serializable {
 
-    //====data fields ====================
+    //========data fields ==============
    
-    private static int nextId = 1; // shared counter across all Order objects
+    private static int nextId = 1; 
     private final int orderId;  
     private final Customer customer;
     private final List<MenuItem> items;
@@ -17,7 +17,7 @@ public class Order implements Serializable {
 //===============Constructor ===============
     // Called once per order. Auto-assigns ID and timestamps the order.
     public Order(Customer customer) {
-        this.orderId  = nextId++;        // unique, auto-incrementing
+        this.orderId  = nextId++;       
         this.customer = customer;
         this.items    = new ArrayList<>();
         this.dateTime = LocalDateTime.now();
@@ -33,12 +33,13 @@ public class Order implements Serializable {
     
  //==============method ===================
     
-// ==== addItem ────
-    // Adds a drink to this order. Validates input first (defensive programming).
+// ==== addItem ===
+    // Adds a drink to this order. Validates input first 
     public void addItem(MenuItem item) {
         if (item == null) throw new IllegalArgumentException("Item cannot be null");
         items.add(item);
     }
+//==claculate total=========
      // same method for hot and cold drink 
    public double calculateTotal() {
     double total = 0;
@@ -49,12 +50,12 @@ public class Order implements Serializable {
 }
 
 
-    // Returns a defensive copy — outside code cannot modify the internal list
+    // her returns copy 
    public List<MenuItem> getItems() {
     return new ArrayList<>(items);
 }
 
-        // Useful for debugging. Override 
+    
     @Override
     public String toString() {
         return String.format("Order #%d | %s | %d items | $%.2f",
