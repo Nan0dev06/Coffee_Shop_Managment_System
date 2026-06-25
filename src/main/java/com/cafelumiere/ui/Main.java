@@ -2,6 +2,7 @@ package com.cafelumiere.ui;
 
 import com.cafelumiere.ui.components.SidebarNav;
 import com.cafelumiere.ui.theme.Theme;
+import com.cafelumiere.ui.CustomerView;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -54,6 +55,7 @@ public class Main {
         content.add(scroll(new OrderEntryScreen(() -> onNavSelect("dashboard"))), "orders");
         content.add(scroll(new InventoryView()), "inventory");
         content.add(scroll(new RevenueSummaryView()), "revenue");
+        content.add(scroll(new CustomerView()), "customers");
 
         // app panel: sidebar pinned to the left, content fills the rest
         JPanel app = new JPanel(new BorderLayout());

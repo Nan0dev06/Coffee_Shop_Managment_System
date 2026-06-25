@@ -79,6 +79,7 @@ public class SidebarNav extends KGradientPanel {
         addItem("orders",    "Orders",    "☰");
         addItem("inventory", "Inventory", "▦");
         addItem("revenue",   "Revenue",   "◔");
+        addItem("customers", "Customers", "👤");
 
         add(Box.createVerticalGlue());
 

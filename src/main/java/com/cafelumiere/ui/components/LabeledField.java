@@ -26,6 +26,11 @@ public class LabeledField extends JPanel {
 
     private final JTextComponent field;
 
+    // simple constructor for plain text fields — no masking, no password logic
+    public LabeledField(String label, String placeholder) {
+        this(label, false, placeholder);
+    }
+
     // label — text shown above the input box
     // password — true uses JPasswordField (masked chars), false uses plain text
     // placeholder — greyed hint text shown when the field is empty (ignored for password fields)
@@ -64,6 +69,11 @@ public class LabeledField extends JPanel {
 
     public String getText() {
         return field instanceof JPasswordField p ? new String(p.getPassword()) : field.getText();
+    }
+
+    // clears the field content — used by CustomerView after a successful add
+    public void clear() {
+        field.setText("");
     }
 
     /** Rounded white container that draws the focus ring around the field. */
