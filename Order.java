@@ -3,7 +3,29 @@ package com.cafelumiere.model;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.io.Serializable;
-
+/**
+ * ============================================================
+ * ORDER CLASS
+ * ============================================================
+ *
+ * Order class — represents one customer order in the café.
+ *
+ * What it does:
+ *
+ * - addItem()          : adds a drink to the order
+ *
+ * - calculateTotal()   : calculates the total price of all drinks
+ *
+ * - getItems()         : returns a copy of the drinks list
+ *
+ * - getOrderId()       : returns the unique order number
+ *
+ * - getCustomer()      : returns who placed the order
+ *
+ * - getDateTime()      : returns when the order was placed
+ *
+ * Saved to file using Serializable.
+ */
 public class Order implements Serializable {
 
     //========data fields ==============
